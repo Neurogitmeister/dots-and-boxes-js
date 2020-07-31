@@ -9,7 +9,7 @@
     height: calc(100vh - 40px);
     overflow: auto;
 }
-
+  
 #settings-popup > form {
     padding: 0 30px;
     margin: 0;
@@ -57,4 +57,27 @@
 
 #input-settings-players-move {
     width: 100%;
+}
+
+#add-player-button {
+    position: relative;
+}
+
+#players-list > #add-player-input {
+    visibility: hidden;
+    left: 0;
+    top: 0;
+}
+
+#players-list.active > #add-player-input {
+    visibility: unset;
+}
+
+#players-list > button {
+    position: absolute;
+    visibility: unset;
+}
+
+#players-list.active > button {
+    visibility: hidden;
 }

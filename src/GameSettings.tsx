@@ -1,4 +1,4 @@
-import React, {Component, FormEventHandler} from 'react'
+import React, {Component} from 'react'
 import './styles/GameSettings.css'
 
 interface GameSettingsList {
@@ -16,8 +16,8 @@ interface GameSettingsList {
 let defaultSettings : GameSettingsList = {
     columns: 5,
     rows: 5,
-    playerNames: [ 'Petya', 'Vasya', 'Kolya'],
-    playerColors: ['333333', '229922', 'f00000'],
+    playerNames: ['Guest','Kolya'],
+    playerColors: ['333333', '66ff66'],
     firstMove: 0,
     gamesToWin: 1,
     dotsSize: 3,
@@ -115,6 +115,18 @@ export default class GameSettings extends Component<GameSettingsModuleProps, Gam
     selectNewPlayer(e: React.FormEvent<HTMLInputElement>){
         e.currentTarget.value = ""
     }
+    mySubmit(e: React.FormEvent<HTMLFormElement>) {
+        e.preventDefault(); 
+        try {
+            this.checkInput(e);
+        } catch (err) {
+         throw new Error(err.message);
+        }
+        return false;
+    }
+    checkInput(e: React.FormEvent<HTMLFormElement>){
+
+    }
     render() {
         let players: Array<object> = []
         for ( let player of this.gameSettings.playerNames) {
@@ -122,7 +134,7 @@ export default class GameSettings extends Component<GameSettingsModuleProps, Gam
         }
         return (
             <div id='settings-popup'>
-                <form>
+                <form onSubmit={this.mySubmit}>
                     <h2 id="game-settings-header">GAME SETTINGS</h2>
                     <h2>Gameplay</h2>
                     <RangeInput boundState="columns" onHandleInputChange={this.cyka}
@@ -231,38 +243,59 @@ class PlayersList extends Component<PlayerListProps, any> {
         this.deletePlayer = this.deletePlayer.bind(this)
     }
 
-    deletePlayer(e: React.MouseEvent<HTMLLIElement>){
-        //console.log(e.currentTarget.parentElement!.children!.item(0)!.innerHTML)
-        this.setState( {players: this.state.players.filter(
-            (name:string) => name !== e.currentTarget.parentElement!.children!.item(0)!.innerHTML)
-        })
-        console.log("Deleting " + (this.state.players.length))
-        this.props.onListChange(this.state.players)
-    }
-    addPlayer(e: React.MouseEvent<HTMLLIElement>) {
+    // search in parent element of e.target for a first child element 
+    // and use it's contents as a filter for state.players
 
-        // open prompt for new name instead of:
-        let counter = 0;
-        let nameID = 0;
-        let collision = false;
-        let name = "Noname" + (counter + 1)
-        while (nameID !== this.state.players.length + 1) {
-            nameID++;
-            counter = 0
-            collision = false;
-            while (counter !== this.state.players.length) {
-                if ("Noname" + nameID == this.state.players[counter++]){
-                    collision = true;
-                }
-            }
-            if (collision === false) break;
+    deletePlayer(e: React.MouseEvent<HTMLLIElement>){
+        // el should be first HTML tag or null
+        let el = e.currentTarget.previousElementSibling // <-- for same elements
+        //let el = e.currentTarget.parentElement === null  <-- for different elements
+        // ? null 
+        // : e.currentTarget.parentElement.children.item(0)
+        // if element was found then assign filtered array to state.players
+        if (el && el.innerHTML !== this.state.players[0]) {
+            this.setState( {players: this.state.players.filter(
+                (name:string) => ( el && el.innerHTML !== name))})
+            // lift state.players to parent
+            this.props.onListChange(this.state.players)
         }
-        name = "Noname" + nameID;
-        // then:
-        this.state.players.push(name)
-        this.setState( {players: this.state.players})
-        console.log("Adding " + (this.state.players.length))
-        this.props.onListChange(this.state.players)
+        
+    }
+    
+    addPlayer(e: React.KeyboardEvent<HTMLInputElement>) {
+        
+        var x = e.which || e.keyCode
+        if (x === 13) {
+            e.preventDefault();
+            let name = e.currentTarget.value
+            if (this.state.players.indexOf(name) === -1) {
+                this.state.players.push(e.currentTarget.value)
+                e.currentTarget.value = ""
+                this.setState( {players: this.state.players})
+                this.props.onListChange(this.state.players)
+                let el = e.currentTarget.parentElement === null
+                ? null
+                : e.currentTarget.parentElement.parentElement;
+                if(el) 
+                    el.className = el.className.split(" ").filter(_class => _class !== "active").join();
+            }    
+        }
+    }
+    showInput(e: React.MouseEvent<HTMLButtonElement>){
+        e.preventDefault(); 
+        let el = e.currentTarget.parentElement;
+        if (el) {
+           el.className = el.className.concat(" active");
+           (document.getElementById("add-player-input")!.firstElementChild as HTMLElement).focus()
+        }
+
+    }
+    hideInput(e: React.FocusEvent<HTMLInputElement>){
+        let el = e.currentTarget.parentElement === null
+        ? null
+        : e.currentTarget.parentElement.parentElement;
+        if(el) 
+            el.className = el.className.split(" ").filter(_class => _class !== "active").join();
     }
     render(){
         let players: Array<object> = []
@@ -272,15 +305,35 @@ class PlayersList extends Component<PlayerListProps, any> {
                     <span>{player}</span>
                     <span onClick={this.deletePlayer}>X</span>
                 </li>
-
             )
         }
-        players.push( <li onClick={this.addPlayer} key="new">+ Add</li>)
         return(
             <ul id="players-list">
                 {players}
+                <button onClick={this.showInput}>Add</button>
+                <li className="blyatiful" id="add-player-input">
+                    <input onKeyPress={this.addPlayer} onBlur={this.hideInput}/>
+                </li>
             </ul>
         )
     }
 }
 
+// open prompt for new name instead of:
+        // let counter = 0;
+        // let nameID = 0;
+        // let collision = false;
+        // let name = "Noname" + (counter + 1)
+        // while (nameID !== this.state.players.length + 1) {
+        //     nameID++;
+        //     counter = 0
+        //     collision = false;
+        //     while (counter !== this.state.players.length) {
+        //         if ("Noname" + nameID === this.state.players[counter++]){
+        //             collision = true;
+        //         }
+        //     }
+        //     if (collision === false) break;
+        // }
+        // name = "Noname" + nameID;
+        // then:
