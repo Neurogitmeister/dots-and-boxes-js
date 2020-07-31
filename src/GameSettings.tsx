@@ -82,8 +82,8 @@ export default class GameSettings extends Component<GameSettingsModuleProps, Gam
             singleGameTime: singleGameTime,
             matchTime:      matchTime
         }
-        this.cyka = this.cyka.bind(this)
-        this.naka = this.naka.bind(this)
+        this.updateRangeAndTime = this.updateRangeAndTime.bind(this)
+        this.updatePlayersList = this.updatePlayersList.bind(this)
     }
 
     gameSettings: GameSettingsList;
@@ -97,7 +97,7 @@ export default class GameSettings extends Component<GameSettingsModuleProps, Gam
         return singleGameTime * gamesPerMatch
     }
 
-    cyka(stateVar: GameStateField, value: number) {
+    updateRangeAndTime(stateVar: GameStateField, value: number) {
         let newState = {...this.state}
         newState[stateVar] = value;
         if (stateVar === "columns"|| stateVar === "rows" || stateVar === "gamesToWin" || stateVar === "playersCount") {
@@ -106,7 +106,7 @@ export default class GameSettings extends Component<GameSettingsModuleProps, Gam
         }
         this.setState(newState)
     }
-    naka(players: string[]) {
+    updatePlayersList(players: string[]) {
         let newState = {...this.state}
         newState["playersCount"] = players.length;
         newState["playerNames"] = players;
@@ -139,17 +139,17 @@ export default class GameSettings extends Component<GameSettingsModuleProps, Gam
                 <form onSubmit={this.mySubmit}>
                     <h2 id="game-settings-header">GAME SETTINGS</h2>
                     <h2>Gameplay</h2>
-                    <RangeInput boundState="columns" onHandleInputChange={this.cyka}
+                    <RangeInput boundState="columns" onHandleInputChange={this.updateRangeAndTime}
                                 id={"input-columns"} label={"Columns"}
                                 max={20} min={3} value={this.state.columns}
                     />
-                    <RangeInput boundState="rows" onHandleInputChange={this.cyka}
+                    <RangeInput boundState="rows" onHandleInputChange={this.updateRangeAndTime}
                                 id={"input-rows"} label={"Rows"}
                                 max={20} min={3} value={this.state.rows}
                     />
                     <div id="settings-players-list">
                         <span>Players</span>
-                        <PlayersList onListChange={this.naka} players={this.state.playerNames}/>
+                        <PlayersList onListChange={this.updatePlayersList} players={this.state.playerNames}/>
                     </div>
                     <div className="row">
                         <p className="col-md-6">First move of player:</p>
@@ -169,7 +169,7 @@ export default class GameSettings extends Component<GameSettingsModuleProps, Gam
                         <span className="col-md-6">{this.state.singleGameTime} sec.</span>
                     </div>
 
-                    <RangeInput boundState={"gamesToWin"} onHandleInputChange={this.cyka}
+                    <RangeInput boundState={"gamesToWin"} onHandleInputChange={this.updateRangeAndTime}
                         id={"input-games-to-win"} label={"Games to win"}
                         min={1} max={10} value={this.state.gamesToWin}
                     />
@@ -181,7 +181,7 @@ export default class GameSettings extends Component<GameSettingsModuleProps, Gam
 
                     <h2>Graphics</h2>
                     <div className="md2">
-                        <RangeInput boundState="dotsSize" onHandleInputChange={this.cyka}
+                        <RangeInput boundState="dotsSize" onHandleInputChange={this.updateRangeAndTime}
                             id={"input-dots-size"} label={"Dots size"}
                             max={20} min={3} value={this.state.dotsSize}
                         />
