@@ -1,0 +1,83 @@
+
+
+header {
+    z-index: 1000;
+    background-color: #282c34;
+    position: fixed;
+    display: flex;
+    justify-content: space-between;
+    top: 0;
+    left: 0;
+    height: 40px;
+    width: 100vw;
+    margin: 0;
+    padding: 0 15px;
+    box-shadow: 0px 0px 3px black;
+}
+
+.header-nav {
+    display: flex;
+}
+
+.header-menu-item {
+    background-color: #282c34;
+    color: #87bfd0;
+    height: 100%;
+    margin: 0px;
+    padding: 0 10px;
+    font-size: 1rem;
+    font-family: sans-serif;
+}
+
+.header-menu-item:hover {
+    color: #87bfd0;
+    filter: brightness(80%);
+    box-shadow: 0px 1px 3px black inset;
+}
+
+a.header-menu-item {
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+}
+
+
+button.header-menu-item {
+    border: none;
+    outline: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+
+button.header-menu-item:active {
+    filter: brightness(60%);
+}
+
+#settings-button::before {
+    content: " ";
+    display: inline-block;
+    width: 25px;
+    height: 25px;
+    margin-right: 5px;
+    background: url("../resources/images/icons/settings.svg");
+    background-repeat: no-repeat;
+}
+.header-login {
+    display: flex;
+    float: right;
+}
+
+.header-login > a {
+    display: flex;
+    color: white;
+}
+.header-login > a > img {
+    height: 30px;
+    width: 30px;
+    margin-right: 5px;
+    background-color: black;
+}
+.header-login > a > span {
+    padding: 0 10px;
+}
