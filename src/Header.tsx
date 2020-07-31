@@ -67,8 +67,3 @@ function HeaderAccountControl() {
         )
     }
 }
-
-
-function showLoginPopup() {
-    console.log('pidor')
-}

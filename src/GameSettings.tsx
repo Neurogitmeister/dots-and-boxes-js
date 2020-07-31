@@ -6,7 +6,7 @@ interface GameSettingsList {
     rows: number
     playerNames: Array<string>
     playerColors: Array<string>
-    firstMove: number
+    firstMove: string
     gamesToWin: number
     dotsSize: number
     dotsColor: string
@@ -17,11 +17,11 @@ let defaultSettings : GameSettingsList = {
     columns: 5,
     rows: 5,
     playerNames: ['Guest','Kolya'],
-    playerColors: ['333333', '66ff66'],
-    firstMove: 0,
+    playerColors: ['#333333', '#66ff66'],
+    firstMove: 'Guest',
     gamesToWin: 1,
     dotsSize: 3,
-    dotsColor: 'f06000'
+    dotsColor: '#f06000'
 }
 
 /*validate token and load settings*/
@@ -33,11 +33,11 @@ function fetchGameSettings (username: string ) : GameSettingsList {
             columns: 15,
             rows: 15,
             playerNames: [ username, 'Petya', 'Vasya', 'Kolya'],
-            playerColors: ['333333', '229922', '2299ff', 'f00000'],
-            firstMove: 0,
+            playerColors: ['#333333', '#229922', '#2299ff', '#f00000'],
+            firstMove: username,
             gamesToWin: 4,
             dotsSize: 7,
-            dotsColor: 'f06000'
+            dotsColor: '#f06000'
         }
         return gameSettings
 }
@@ -52,11 +52,13 @@ interface GameStateFields {
     columns :       number;
     rows:           number;
     playerNames:    string[],
+    playerColors:   string[],
     playersCount:   number;
+    firstMove:      string;
     gamesToWin:     number;
     dotsSize:       number;
-    singleGameTime: number;
-    matchTime:      number;
+    singleGameTime: string;
+    matchTime:      string;
 }
 
 type GameStateField = "columns"|"rows"|"playersCount"|"gamesToWin"|"dotsSize"
@@ -70,25 +72,30 @@ export default class GameSettings extends Component<GameSettingsModuleProps, Gam
         if (this.props.tokenIsValid)
             this.gameSettings = fetchGameSettings(this.props.username);
         else this.gameSettings = defaultSettings;
-        let singleGameTime = this.calculateSingleGameTime(this.gameSettings.columns, this.gameSettings.rows)
-        let matchTime = this.calculateMatchTime(this.gameSettings.gamesToWin, this.gameSettings.playerNames.length, singleGameTime)
+        let singleSeconds = this.calculateSingleGameTime(this.gameSettings.columns, this.gameSettings.rows)
+        let matchTime = this.formatSeconds (this.calculateMatchTime(this.gameSettings.gamesToWin, this.gameSettings.playerNames.length, singleSeconds))
+        let singleGameTime = this.formatSeconds(singleSeconds)
         this.state = {
             columns :       this.gameSettings.columns,
             rows:           this.gameSettings.rows,
             playerNames:    this.gameSettings.playerNames,
+            playerColors:   this.gameSettings.playerColors,
             playersCount:   this.gameSettings.playerNames.length,
+            firstMove:      this.gameSettings.firstMove,
             gamesToWin:     this.gameSettings.gamesToWin,
             dotsSize:       this.gameSettings.dotsSize,
             singleGameTime: singleGameTime,
             matchTime:      matchTime
         }
-        this.updateRangeAndTime = this.updateRangeAndTime.bind(this)
+        this.updateTime = this.updateTime.bind(this)
+        this.updateStateValue = this.updateStateValue.bind(this)
         this.updatePlayersList = this.updatePlayersList.bind(this)
+        this.updateFirstMove = this.updateFirstMove.bind(this)
     }
 
     gameSettings: GameSettingsList;
 
-    calculateSingleGameTime(columns: number, rows: number) :number {
+    calculateSingleGameTime(columns: number, rows: number) : number {
        return (columns * (rows + 1) + rows) * secPerMove
     }
 
@@ -96,26 +103,48 @@ export default class GameSettings extends Component<GameSettingsModuleProps, Gam
         let gamesPerMatch = (gamesToWin * (playersCount + 2) - playersCount) / 2
         return singleGameTime * gamesPerMatch
     }
-
-    updateRangeAndTime(stateVar: GameStateField, value: number) {
+    formatSeconds(fullSeconds : number) : string {
+       let seconds = fullSeconds % 60
+       let minutes = Math.floor(fullSeconds / 60) % 60
+       let hours = Math.floor(fullSeconds / 3600)
+       return (hours + "h " + minutes + "m " + seconds + "s")
+    }
+    updateStateValue(stateVar: GameStateField, value: number){
         let newState = {...this.state}
         newState[stateVar] = value;
         if (stateVar === "columns"|| stateVar === "rows" || stateVar === "gamesToWin" || stateVar === "playersCount") {
-            newState.singleGameTime = this.calculateSingleGameTime(newState.columns, newState.rows)
-            newState.matchTime = this.calculateMatchTime(newState.gamesToWin, newState.playersCount, newState.singleGameTime)
+            newState = this.updateTime(newState)
         }
         this.setState(newState)
     }
-    updatePlayersList(players: string[]) {
+    updateTime( State: GameStateFields) : GameStateFields {
+        
+        let singleSeconds = this.calculateSingleGameTime(State.columns, State.rows)
+        State.matchTime = this.formatSeconds(this.calculateMatchTime(State.gamesToWin, State.playersCount, singleSeconds))
+        State.singleGameTime = this.formatSeconds(singleSeconds)
+        
+        return State;
+    }
+    updatePlayersList(players: string[], playerColors: string[]) {
+    
         let newState = {...this.state}
-        newState["playersCount"] = players.length;
-        newState["playerNames"] = players;
-        console.log(this.state)
-        console.log(newState)
+        newState.playersCount = players.length;   
+        newState.playerNames = players;
+        newState.playerColors = playerColors;
+        newState = this.updateTime(newState) 
         this.setState(newState)
     }
     selectNewPlayer(e: React.FormEvent<HTMLInputElement>){
         e.currentTarget.value = ""
+    }
+    updateFirstMove(e: React.FocusEvent<HTMLInputElement>){
+        if (e.currentTarget.value) {
+            let newState = {...this.state}
+            newState.firstMove = e.currentTarget.value
+            this.setState(newState)
+        } else {
+            e.currentTarget.value = this.state.firstMove
+        }
     }
     mySubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault(); 
@@ -139,49 +168,60 @@ export default class GameSettings extends Component<GameSettingsModuleProps, Gam
                 <form onSubmit={this.mySubmit}>
                     <h2 id="game-settings-header">GAME SETTINGS</h2>
                     <h2>Gameplay</h2>
-                    <RangeInput boundState="columns" onHandleInputChange={this.updateRangeAndTime}
+                    <RangeInput boundState="columns" onHandleInputChange={this.updateStateValue}
                                 id={"input-columns"} label={"Columns"}
                                 max={20} min={3} value={this.state.columns}
                     />
-                    <RangeInput boundState="rows" onHandleInputChange={this.updateRangeAndTime}
+                    <RangeInput boundState="rows" onHandleInputChange={this.updateStateValue}
                                 id={"input-rows"} label={"Rows"}
                                 max={20} min={3} value={this.state.rows}
                     />
+                    
+
                     <div id="settings-players-list">
                         <span>Players</span>
-                        <PlayersList onListChange={this.updatePlayersList} players={this.state.playerNames}/>
+                        <PlayersList onListChange={this.updatePlayersList} 
+                        players={this.state.playerNames} playerColors={this.state.playerColors}/>
                     </div>
+
+
                     <div className="row">
                         <p className="col-md-6">First move of player:</p>
                         <div className="col-md-6">
-                            <input name="First Move"
+                            <input name="sglsbbxxcvcx"
                                    list="players-datalist"
                                    id="input-settings-players-move"
-                                   onFocus={this.selectNewPlayer}/>
+                                   onFocus={this.selectNewPlayer}
+                                   onBlur={this.updateFirstMove}
+                                   defaultValue={this.state.firstMove}/>
+
+
                             <datalist id="players-datalist">
                                 {players}
                             </datalist>
+
+
                         </div>
                     </div>
 
                     <div className="estimate-calc row">
                         <p className="col-md-6">Estimated single game time:</p>
-                        <span className="col-md-6">{this.state.singleGameTime} sec.</span>
+                        <span className="col-md-6">{this.state.singleGameTime}</span>
                     </div>
 
-                    <RangeInput boundState={"gamesToWin"} onHandleInputChange={this.updateRangeAndTime}
+                    <RangeInput boundState={"gamesToWin"} onHandleInputChange={this.updateStateValue}
                         id={"input-games-to-win"} label={"Games to win"}
                         min={1} max={10} value={this.state.gamesToWin}
                     />
 
                     <div className="estimate-calc row">
                         <p className="col-md-6">Estimated match time:</p>
-                        <span className="col-md-6">{this.state.matchTime} sec.</span>
+                        <span className="col-md-6">{this.state.matchTime}</span>
                     </div>
 
                     <h2>Graphics</h2>
                     <div className="md2">
-                        <RangeInput boundState="dotsSize" onHandleInputChange={this.updateRangeAndTime}
+                        <RangeInput boundState="dotsSize" onHandleInputChange={this.updateStateValue}
                             id={"input-dots-size"} label={"Dots size"}
                             max={20} min={3} value={this.state.dotsSize}
                         />
@@ -230,7 +270,8 @@ class RangeInput extends Component<RangeInputProps, any>{
 }
 interface PlayerListProps {
     players: Array<string>
-    onListChange(players: string[]): void
+    playerColors: Array<string>
+    onListChange(players: string[], playerColors: string[]): void
 }
 
 class PlayersList extends Component<PlayerListProps, any> {
@@ -238,6 +279,7 @@ class PlayersList extends Component<PlayerListProps, any> {
         super(props)
         this.addPlayer = this.addPlayer.bind(this)
         this.deletePlayer = this.deletePlayer.bind(this)
+        this.setPlayerColor = this.setPlayerColor.bind(this)
     }
 
     // search in parent element of e.target for a first child element 
@@ -248,13 +290,14 @@ class PlayersList extends Component<PlayerListProps, any> {
         //let el = e.currentTarget.previousElementSibling // <-- for same elements
         let el = e.currentTarget.parentElement === null  //<-- for different elements
         ? null 
-        : e.currentTarget.parentElement.children.item(0)
+        : e.currentTarget.parentElement.getElementsByClassName("player-name")[0]
         //if element was found then assign filtered array to props.players
         if (el && el.innerHTML !== this.props.players[0]) {
             let newList = this.props.players.filter(
-                (name:string) => ( el && el.innerHTML !== name))
-                
-            this.props.onListChange(newList)
+                (name:string) => ( el && el.innerHTML !== name));
+            let newColorList = this.props.playerColors.filter(
+                (id: string) => (+id !== this.props.players.indexOf(el!.innerHTML)))
+            this.props.onListChange(newList, newColorList)
         }
         
     }
@@ -267,15 +310,34 @@ class PlayersList extends Component<PlayerListProps, any> {
             let name = e.currentTarget.value
             if (this.props.players.indexOf(name) === -1) {
                 this.props.players.push(e.currentTarget.value)
+                this.props.playerColors.push(this.getRandomColor())
                 e.currentTarget.value = ""
-                this.props.onListChange(this.props.players)
+                this.props.onListChange(this.props.players, this.props.playerColors)
                 let el = e.currentTarget.parentElement === null
                 ? null
                 : e.currentTarget.parentElement.parentElement;
                 if(el) 
                     el.className = el.className.split(" ").filter(_class => _class !== "active").join();
+                
             }    
         }
+    }
+    getRandomColor() {
+        var letters = '0123456789ABCDEF';
+        var color = '#';
+        for (var i = 0; i < 6; i++) {
+          color += letters[Math.floor(Math.random() * 16)];
+        }
+        return color;
+    }
+    setPlayerColor(e: React.FocusEvent<HTMLInputElement>) {
+
+        let index = this.props.players.indexOf(e.currentTarget.parentElement!.id)
+        //console.log(e.currentTarget.parentElement!.id + " on position " + index)
+        let newColors = this.props.playerColors
+        newColors[index] = e.currentTarget.value;
+        this.props.onListChange(this.props.players, newColors)
+
     }
     showInput(e: React.MouseEvent<HTMLButtonElement>){
         e.preventDefault(); 
@@ -295,11 +357,17 @@ class PlayersList extends Component<PlayerListProps, any> {
     }
     render(){
         let players: Array<object> = []
+        let counter = 0;
         for ( let player of this.props.players) {
+            
             players.push(
-                <li key={player}>
-                    <span>{player}</span>
-                    <span onClick={this.deletePlayer}>X</span>
+                <li key={player} id={player}>
+                    <input type="color" 
+                        defaultValue={this.props.playerColors[counter++]}
+                        onBlur={this.setPlayerColor}/>
+                    <span className="player-name">{player}</span>
+                    <span className="button-delete" onClick={this.deletePlayer}>X</span>
+                    
                 </li>
             )
         }
@@ -307,7 +375,7 @@ class PlayersList extends Component<PlayerListProps, any> {
             <ul id="players-list">
                 {players}
                 <button onClick={this.showInput}>Add</button>
-                <li className="blyatiful" id="add-player-input">
+                <li className="" id="add-player-input">
                     <input onKeyPress={this.addPlayer} onBlur={this.hideInput}/>
                 </li>
             </ul>
