@@ -110,6 +110,8 @@ export default class GameSettings extends Component<GameSettingsModuleProps, Gam
         let newState = {...this.state}
         newState["playersCount"] = players.length;
         newState["playerNames"] = players;
+        console.log(this.state)
+        console.log(newState)
         this.setState(newState)
     }
     selectNewPlayer(e: React.FormEvent<HTMLInputElement>){
@@ -129,7 +131,7 @@ export default class GameSettings extends Component<GameSettingsModuleProps, Gam
     }
     render() {
         let players: Array<object> = []
-        for ( let player of this.gameSettings.playerNames) {
+        for ( let player of this.state.playerNames) {
             players.push( <option key={player} value={player}/> )
         }
         return (
@@ -207,13 +209,9 @@ interface RangeInputProps {
 class RangeInput extends Component<RangeInputProps, any>{
     constructor(props : RangeInputProps){
         super(props)
-        this.state = {
-            value: this.props.value
-        };
         this.handleInputChange = this.handleInputChange.bind(this)
     }
     handleInputChange(e: React.FormEvent<HTMLInputElement>) {
-        this.setState({value: e.currentTarget.value})
         this.props.onHandleInputChange(this.props.boundState,+e.currentTarget.value)
     }
     render() {
@@ -221,7 +219,7 @@ class RangeInput extends Component<RangeInputProps, any>{
             <div className="range">
                 <label htmlFor={this.props.id}>{this.props.label}</label>
                 <input type="range" id={this.props.id} max={this.props.max} min={this.props.min} // <-- load from props
-                       value={this.state.value} // <-- load from state
+                       value={this.props.value} // <-- load from state
                        onChange={this.handleInputChange} // <-- change state while changing input
                 />
 
@@ -238,7 +236,6 @@ interface PlayerListProps {
 class PlayersList extends Component<PlayerListProps, any> {
     constructor(props : PlayerListProps){
         super(props)
-        this.state = {players: this.props.players}
         this.addPlayer = this.addPlayer.bind(this)
         this.deletePlayer = this.deletePlayer.bind(this)
     }
@@ -248,16 +245,16 @@ class PlayersList extends Component<PlayerListProps, any> {
 
     deletePlayer(e: React.MouseEvent<HTMLLIElement>){
         // el should be first HTML tag or null
-        let el = e.currentTarget.previousElementSibling // <-- for same elements
-        //let el = e.currentTarget.parentElement === null  <-- for different elements
-        // ? null 
-        // : e.currentTarget.parentElement.children.item(0)
-        // if element was found then assign filtered array to state.players
-        if (el && el.innerHTML !== this.state.players[0]) {
-            this.setState( {players: this.state.players.filter(
-                (name:string) => ( el && el.innerHTML !== name))})
-            // lift state.players to parent
-            this.props.onListChange(this.state.players)
+        //let el = e.currentTarget.previousElementSibling // <-- for same elements
+        let el = e.currentTarget.parentElement === null  //<-- for different elements
+        ? null 
+        : e.currentTarget.parentElement.children.item(0)
+        //if element was found then assign filtered array to props.players
+        if (el && el.innerHTML !== this.props.players[0]) {
+            let newList = this.props.players.filter(
+                (name:string) => ( el && el.innerHTML !== name))
+                
+            this.props.onListChange(newList)
         }
         
     }
@@ -268,11 +265,10 @@ class PlayersList extends Component<PlayerListProps, any> {
         if (x === 13) {
             e.preventDefault();
             let name = e.currentTarget.value
-            if (this.state.players.indexOf(name) === -1) {
-                this.state.players.push(e.currentTarget.value)
+            if (this.props.players.indexOf(name) === -1) {
+                this.props.players.push(e.currentTarget.value)
                 e.currentTarget.value = ""
-                this.setState( {players: this.state.players})
-                this.props.onListChange(this.state.players)
+                this.props.onListChange(this.props.players)
                 let el = e.currentTarget.parentElement === null
                 ? null
                 : e.currentTarget.parentElement.parentElement;
@@ -299,7 +295,7 @@ class PlayersList extends Component<PlayerListProps, any> {
     }
     render(){
         let players: Array<object> = []
-        for ( let player of this.state.players) {
+        for ( let player of this.props.players) {
             players.push(
                 <li key={player}>
                     <span>{player}</span>
