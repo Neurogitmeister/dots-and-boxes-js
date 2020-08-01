@@ -1,0 +1,80 @@
+#settings-popup {
+    z-index: 900;
+    background-color: #282c34;
+    color: white;
+    width: 300px;
+    position: absolute;
+    top: 40px;
+    left: 0px;
+    height: calc(100vh - 40px);
+    overflow: auto;
+    form {
+        padding: 0 30px;
+        margin: 0;
+        h2 {
+            color: #87bfd0;
+            font-size: 1rem;
+            font-weight: normal;
+            text-align: center;
+            padding-bottom: 5px;
+            border-bottom: solid 1px;
+        }
+        #game-settings-header {
+            border-bottom: none;
+            padding-bottom: 0;
+            margin-bottom: 0;
+        }
+        div > p {
+            margin: 0;
+        }
+    }
+}
+
+.range {
+    position: relative;
+    input {
+        width: 80%;
+        margin-right: 10px;
+        display: block;
+    }
+    span {
+        font-size: 1rem;
+        line-height: 1rem;
+        position: absolute;
+        left: 85%;
+        bottom: 0;
+    }
+}
+
+#settings-players-list > p {
+    display: inline-block;
+}
+
+#input-settings-players-move {
+    width: 100%;
+}
+
+#add-player-button {
+    position: relative;
+}
+
+#players-list {
+
+    #add-player-input {
+        visibility: hidden;
+        left: 0;
+        top: 0;
+    }
+    button {
+        position: absolute;
+        visibility: unset;
+    }
+    &.active {
+        button {
+            visibility: hidden;
+        }
+        #add-player-input {
+            visibility: unset;
+        }
+    }
+}

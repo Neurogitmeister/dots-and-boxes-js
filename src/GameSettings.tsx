@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import './styles/GameSettings.css'
+import './styles/GameSettings.scss'
 
 interface GameSettingsList {
     columns: number
@@ -205,8 +205,8 @@ export default class GameSettings extends Component<GameSettingsModuleProps, Gam
                     </div>
 
                     <div className="estimate-calc row">
-                        <p className="col-md-6">Estimated single game time:</p>
-                        <span className="col-md-6">{this.state.singleGameTime}</span>
+                        <p className="col-6">Estimated single game time:</p>
+                        <span className="col-6">{this.state.singleGameTime}</span>
                     </div>
 
                     <RangeInput boundState={"gamesToWin"} onHandleInputChange={this.updateStateValue}
@@ -215,8 +215,8 @@ export default class GameSettings extends Component<GameSettingsModuleProps, Gam
                     />
 
                     <div className="estimate-calc row">
-                        <p className="col-md-6">Estimated match time:</p>
-                        <span className="col-md-6">{this.state.matchTime}</span>
+                        <p className="col-6">Estimated match time:</p>
+                        <span className="col-6">{this.state.matchTime}</span>
                     </div>
 
                     <h2>Graphics</h2>

@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import GameSettings from './GameSettings'
-import './styles/Header.css'
+import './styles/Header.scss'
 import defaultProfilePic from './resources/images/icons/logo.svg'
 
 
