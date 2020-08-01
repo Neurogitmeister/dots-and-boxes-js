@@ -73,7 +73,9 @@ export default class GameSettings extends Component<GameSettingsModuleProps, Gam
             this.gameSettings = fetchGameSettings(this.props.username);
         else this.gameSettings = defaultSettings;
         let singleSeconds = this.calculateSingleGameTime(this.gameSettings.columns, this.gameSettings.rows)
-        let matchTime = this.formatSeconds (this.calculateMatchTime(this.gameSettings.gamesToWin, this.gameSettings.playerNames.length, singleSeconds))
+        let matchTime = this.formatSeconds(this.calculateMatchTime(
+            this.gameSettings.gamesToWin, this.gameSettings.playerNames.length, singleSeconds
+        ))
         let singleGameTime = this.formatSeconds(singleSeconds)
         this.state = {
             columns :       this.gameSettings.columns,
@@ -112,7 +114,9 @@ export default class GameSettings extends Component<GameSettingsModuleProps, Gam
     updateStateValue(stateVar: GameStateField, value: number){
         let newState = {...this.state}
         newState[stateVar] = value;
-        if (stateVar === "columns"|| stateVar === "rows" || stateVar === "gamesToWin" || stateVar === "playersCount") {
+        if   ( stateVar === "columns"    || stateVar === "rows" 
+            || stateVar === "gamesToWin" || stateVar === "playersCount") 
+        {
             newState = this.updateTime(newState)
         }
         this.setState(newState)
@@ -120,7 +124,9 @@ export default class GameSettings extends Component<GameSettingsModuleProps, Gam
     updateTime( State: GameStateFields) : GameStateFields {
         
         let singleSeconds = this.calculateSingleGameTime(State.columns, State.rows)
-        State.matchTime = this.formatSeconds(this.calculateMatchTime(State.gamesToWin, State.playersCount, singleSeconds))
+        State.matchTime = this.formatSeconds(this.calculateMatchTime(
+            State.gamesToWin, State.playersCount, singleSeconds
+        ))
         State.singleGameTime = this.formatSeconds(singleSeconds)
         
         return State;
@@ -258,9 +264,10 @@ class RangeInput extends Component<RangeInputProps, any>{
         return(
             <div className="range">
                 <label htmlFor={this.props.id}>{this.props.label}</label>
-                <input type="range" id={this.props.id} max={this.props.max} min={this.props.min} // <-- load from props
-                       value={this.props.value} // <-- load from state
-                       onChange={this.handleInputChange} // <-- change state while changing input
+                <input type="range" 
+                    id={this.props.id} max={this.props.max} min={this.props.min} // <-- load from props
+                    value={this.props.value} // <-- load from state
+                    onChange={this.handleInputChange} // <-- change state while changing input
                 />
 
                 <span id={this.props.id + "-span"}>{this.props.value}</span>
@@ -286,12 +293,13 @@ class PlayersList extends Component<PlayerListProps, any> {
     // and use it's contents as a filter for state.players
 
     deletePlayer(e: React.MouseEvent<HTMLLIElement>){
-        // el should be first HTML tag or null
-        //let el = e.currentTarget.previousElementSibling // <-- for same elements
-        let el = e.currentTarget.parentElement === null  //<-- for different elements
+        
+        let el = e.currentTarget.parentElement === null
         ? null 
         : e.currentTarget.parentElement.getElementsByClassName("player-name")[0]
         //if element was found then assign filtered array to props.players
+
+        // (conditions to restrict deleting a player are still in development)
         if (el && el.innerHTML !== this.props.players[0]) {
             let newList = this.props.players.filter(
                 (name:string) => ( el && el.innerHTML !== name));
