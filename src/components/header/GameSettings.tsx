@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import './styles/GameSettings.scss'
+import '../../styles/GameSettings.scss'
 import { PlayersList, PlayerListProps } from './PlayersList';
 
 interface GameSettingsList {
@@ -17,8 +17,8 @@ interface GameSettingsList {
 let defaultSettings : GameSettingsList = {
     columns: 5,
     rows: 5,
-    playerNames: ['Guest','Kolya'],
-    playerColors: ['#333333', '#66ff66'],
+    playerNames: ['Guest','Kolya','Lena','Vika Petrovna Santa Maria Herra'],
+    playerColors: ['#333333', '#66ff66', '#9351F4', '#D7A3Af'],
     firstMove: 'Guest',
     gamesToWin: 1,
     dotsSize: 3,

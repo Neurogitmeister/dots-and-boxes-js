@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import GameSettings from './GameSettings'
-import './styles/Header.scss'
-import defaultProfilePic from './resources/images/icons/logo.svg'
+import '../../styles/Header.scss'
+import defaultProfilePic from '../../resources/images/icons/logo.svg'
 
 
 // fetch these from cookies (in near future)

@@ -11,7 +11,8 @@ export class PlayersList extends Component<PlayerListProps, any> {
         super(props);
         this.addPlayer = this.addPlayer.bind(this);
         this.deletePlayer = this.deletePlayer.bind(this);
-        this.setPlayerColor = this.setPlayerColor.bind(this);
+        this.changePlayerColor = this.changePlayerColor.bind(this);
+        this.changePlayerName = this.changePlayerName.bind(this);
     }
 
     // search in parent element of e.target for a first child element 
@@ -44,12 +45,28 @@ export class PlayersList extends Component<PlayerListProps, any> {
                 this.props.playerColors.push(this.getRandomColor());
                 e.currentTarget.value = "";
                 this.props.onListChange(this.props.players, this.props.playerColors);
-                let el = e.currentTarget.parentElement === null
-                    ? null
-                    : e.currentTarget.parentElement.parentElement;
+                let el = e.currentTarget.parentElement 
                 if (el)
                     el.className = el.className.split(" ").filter(_class => _class !== "active").join();
 
+            }
+        }
+    }
+    changePlayerName(e: React.KeyboardEvent<HTMLInputElement>){
+        var x = e.which || e.keyCode;
+        if (x === 13) {
+            e.preventDefault();
+            let newName = e.currentTarget.value;
+            let el = e.currentTarget.parentElement === null
+            ? null
+            : e.currentTarget.parentElement.firstElementChild
+            if (el) {
+                let prevIndex = this.props.players.indexOf(el.innerHTML)
+                let index = this.props.players.indexOf(newName)
+                if ( index === -1 ) {
+                    this.props.players[prevIndex] = newName
+                    this.props.onListChange(this.props.players, this.props.playerColors);
+                }
             }
         }
     }
@@ -61,7 +78,7 @@ export class PlayersList extends Component<PlayerListProps, any> {
         }
         return color;
     }
-    setPlayerColor(e: React.FocusEvent<HTMLInputElement>) {
+    changePlayerColor(e: React.FocusEvent<HTMLInputElement>) {
 
         let index = this.props.players.indexOf(e.currentTarget.parentElement!.id);
         //console.log(e.currentTarget.parentElement!.id + " on position " + index)
@@ -72,17 +89,16 @@ export class PlayersList extends Component<PlayerListProps, any> {
     }
     showInput(e: React.MouseEvent<HTMLButtonElement>) {
         e.preventDefault();
-        let el = e.currentTarget.parentElement;
+        let el = e.currentTarget.parentElement
         if (el) {
             el.className = el.className.concat(" active");
-            (document.getElementById("add-player-input")!.firstElementChild as HTMLElement).focus();
+            (el.lastElementChild as HTMLElement).focus();
         }
 
     }
     hideInput(e: React.FocusEvent<HTMLInputElement>) {
-        let el = e.currentTarget.parentElement === null
-            ? null
-            : e.currentTarget.parentElement.parentElement;
+        console.log("Hiding")
+        let el = e.currentTarget.parentElement 
         if (el)
             el.className = el.className.split(" ").filter(_class => _class !== "active").join();
     }
@@ -90,25 +106,32 @@ export class PlayersList extends Component<PlayerListProps, any> {
         let players: Array<object> = [];
         let counter = 0;
         for (let player of this.props.players) {
-
             players.push(
                 <li key={player} id={player}>
-                    <input type="color"
-                        defaultValue={this.props.playerColors[counter++]}
-                        onBlur={this.setPlayerColor} />
-                    <span className="player-name">{player}</span>
                     <span className="button-delete" onClick={this.deletePlayer}>X</span>
-
+                    <input className="color-input-circle" type="color"
+                        defaultValue={this.props.playerColors[counter++]}
+                        onBlur={this.changePlayerColor} />
+                        {counter === 0 &&          
+                            <span className="player-name">{player}</span>       
+                        }
+                        {counter > 0 &&
+                            <div className="changable-name">
+                                <span onClick={this.showInput} className="player-name">{player}</span>                        
+                                <input onKeyPress={this.changePlayerName} onBlur={this.hideInput} defaultValue={player}/>
+                            </div>
+                        }
+                    
                 </li>
             );
         }
         return (
             <ul id="players-list">
-                {players}
-                <button onClick={this.showInput}>Add</button>
-                <li className="" id="add-player-input">
+                {players}     
+                <div className="changable-name" id="add-player-input">
+                    <button onClick={this.showInput}>Add</button>
                     <input onKeyPress={this.addPlayer} onBlur={this.hideInput} />
-                </li>
+                </div>
             </ul>
         );
     }
