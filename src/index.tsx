@@ -4,9 +4,9 @@ import './styles/index.scss'
 
 import React from 'react'
 import ReactDOM from 'react-dom'
-import Header from './Header'
-import { DynamicPageContent } from './DynamicPageContent'
-import Footer from './Footer'
+import Header from './components/header/Header'
+import { DynamicPageContent } from './components/DynamicPageContent'
+import Footer from './components/Footer'
 import * as serviceWorker from './serviceWorker'
 
 ReactDOM.render(
