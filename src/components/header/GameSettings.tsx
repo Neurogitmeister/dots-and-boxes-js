@@ -6,6 +6,7 @@ interface GameSettingsList {
     columns: number
     rows: number
     playerNames: Array<string>
+    playerPicURLs: Array<string>
     playerColors: Array<string>
     firstMove: string
     gamesToWin: number
@@ -19,6 +20,12 @@ let defaultSettings : GameSettingsList = {
     rows: 5,
     playerNames: ['Guest','Kolya','Lena','Vika Petrovna Santa Maria Herra'],
     playerColors: ['#333333', '#66ff66', '#9351F4', '#D7A3Af'],
+    playerPicURLs: [
+        '/static/media/logo.5d5d9eef.svg',
+        '/static/media/logo.5d5d9eef.svg',
+        '/static/media/logo.5d5d9eef.svg',
+        '/static/media/logo.5d5d9eef.svg'
+    ],
     firstMove: 'Guest',
     gamesToWin: 1,
     dotsSize: 3,
@@ -35,6 +42,12 @@ function fetchGameSettings (username: string ) : GameSettingsList {
             rows: 15,
             playerNames: [ username, 'Petya', 'Vasya', 'Kolya'],
             playerColors: ['#333333', '#229922', '#2299ff', '#f00000'],
+            playerPicURLs: [
+                '../../resources/images/icons/logo.svg',
+                '../../resources/images/icons/logo.svg',
+                '../../resources/images/icons/logo.svg',
+                '../../resources/images/icons/logo.svg'
+            ],
             firstMove: username,
             gamesToWin: 4,
             dotsSize: 7,
@@ -53,6 +66,7 @@ interface GameStateFields {
     columns :       number;
     rows:           number;
     playerNames:    string[],
+    playerPicURLs:  string[],
     playerColors:   string[],
     playersCount:   number;
     firstMove:      string;
@@ -82,6 +96,7 @@ export default class GameSettings extends Component<GameSettingsModuleProps, Gam
             columns :       this.gameSettings.columns,
             rows:           this.gameSettings.rows,
             playerNames:    this.gameSettings.playerNames,
+            playerPicURLs:  this.gameSettings.playerPicURLs,
             playerColors:   this.gameSettings.playerColors,
             playersCount:   this.gameSettings.playerNames.length,
             firstMove:      this.gameSettings.firstMove,
@@ -138,7 +153,8 @@ export default class GameSettings extends Component<GameSettingsModuleProps, Gam
         newState.playersCount = players.length;   
         newState.playerNames = players;
         newState.playerColors = playerColors;
-        newState = this.updateTime(newState) 
+        newState = this.updateTime(newState)
+        console.log(newState)
         this.setState(newState)
     }
     selectNewPlayer(e: React.FormEvent<HTMLInputElement>){
@@ -148,10 +164,12 @@ export default class GameSettings extends Component<GameSettingsModuleProps, Gam
         if (e.currentTarget.value) {
             let newState = {...this.state}
             newState.firstMove = e.currentTarget.value
+            console.log(newState)
             this.setState(newState)
         } else {
             e.currentTarget.value = this.state.firstMove
         }
+        
     }
     mySubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault(); 
@@ -188,7 +206,10 @@ export default class GameSettings extends Component<GameSettingsModuleProps, Gam
                     <div id="settings-players-list">
                         <span>Players</span>
                         <PlayersList onListChange={this.updatePlayersList} 
-                        players={this.state.playerNames} playerColors={this.state.playerColors}/>
+                            players={this.state.playerNames} 
+                            playerColors={this.state.playerColors}
+                            playerPicURLs={this.state.playerPicURLs}
+                        />
                     </div>
 
 

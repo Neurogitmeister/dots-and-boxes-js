@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 
 export interface PlayerListProps {
     players: Array<string>
-    playerColors: Array<string>
+	playerColors: Array<string>
+	playerPicURLs : Array<string>
     onListChange(players: string[], playerColors: string[]): void
 }
 
@@ -59,7 +60,7 @@ export class PlayersList extends Component<PlayerListProps, any> {
             let newName = e.currentTarget.value;
             let el = e.currentTarget.parentElement === null
             ? null
-            : e.currentTarget.parentElement.firstElementChild
+            : e.currentTarget.parentElement.getElementsByClassName("player-name")[0];
             if (el) {
                 let prevIndex = this.props.players.indexOf(el.innerHTML)
                 let index = this.props.players.indexOf(newName)
@@ -79,20 +80,28 @@ export class PlayersList extends Component<PlayerListProps, any> {
         return color;
     }
     changePlayerColor(e: React.FocusEvent<HTMLInputElement>) {
+		let el = e.currentTarget.parentElement === null
+            ? null
+			: e.currentTarget.parentElement.getElementsByClassName("player-name")[0];
+		if (el) {
 
-        let index = this.props.players.indexOf(e.currentTarget.parentElement!.id);
-        //console.log(e.currentTarget.parentElement!.id + " on position " + index)
-        let newColors = this.props.playerColors;
-        newColors[index] = e.currentTarget.value;
-        this.props.onListChange(this.props.players, newColors);
+			let index = this.props.players.indexOf(el.innerHTML);
+			console.log(el.innerHTML + " on position " + index)
+			let newColors = this.props.playerColors;
+			newColors[index] = e.currentTarget.value;
+			this.props.onListChange(this.props.players, newColors);
+		}
 
     }
     showInput(e: React.MouseEvent<HTMLButtonElement>) {
         e.preventDefault();
         let el = e.currentTarget.parentElement
         if (el) {
+            console.log(e.currentTarget.innerHTML , e.currentTarget.innerText)
             el.className = el.className.concat(" active");
             (el.lastElementChild as HTMLElement).focus();
+            (el.lastElementChild as HTMLInputElement).defaultValue = e.currentTarget.innerText;
+            
         }
 
     }
@@ -100,30 +109,36 @@ export class PlayersList extends Component<PlayerListProps, any> {
         console.log("Hiding")
         let el = e.currentTarget.parentElement 
         if (el)
-            el.className = el.className.split(" ").filter(_class => _class !== "active").join();
+            el.className = el.className.split(" ").filter(_class => _class !== "active").join(" ");
     }
     render() {
         let players: Array<object> = [];
         let counter = 0;
         for (let player of this.props.players) {
             players.push(
-                <li key={player} id={player}>
+            	<li key={player} >
                     <span className="button-delete" onClick={this.deletePlayer}>X</span>
-                    <input className="color-input-circle" type="color"
-                        defaultValue={this.props.playerColors[counter++]}
-                        onBlur={this.changePlayerColor} />
-                        {counter === 0 &&          
-                            <span className="player-name">{player}</span>       
+                    <input className="input-player-color" type="color"
+                        defaultValue={this.props.playerColors[counter]}
+                        onBlur={this.changePlayerColor} 
+					/>
+		 
+						{counter === 0 &&
+							<div className="profile-container">
+								<img src={this.props.playerPicURLs[counter]} alt=""/>
+								<span className="player-name">{player}</span>       
+							</div>	       
                         }
                         {counter > 0 &&
-                            <div className="changable-name">
+                            <div className="profile-container changable-name">
+								<img src={this.props.playerPicURLs[counter]} alt=""/>
                                 <span onClick={this.showInput} className="player-name">{player}</span>                        
-                                <input onKeyPress={this.changePlayerName} onBlur={this.hideInput} defaultValue={player}/>
+                                <input className="some-class" onKeyPress={this.changePlayerName} onBlur={this.hideInput} defaultValue={player}/>
                             </div>
                         }
-                    
                 </li>
-            );
+			);
+			counter++;
         }
         return (
             <ul id="players-list">
