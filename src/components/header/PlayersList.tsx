@@ -117,12 +117,12 @@ export class PlayersList extends Component<PlayerListProps, any> {
         for (let player of this.props.players) {
             players.push(
             	<li key={player} >
+                    <div onClick={function() {}} className="overlay-disable-edit"></div>
                     <span className="button-delete" onClick={this.deletePlayer}>X</span>
                     <input className="input-player-color" type="color"
                         defaultValue={this.props.playerColors[counter]}
                         onBlur={this.changePlayerColor} 
 					/>
-		 
 						{counter === 0 &&
 							<div className="profile-container">
 								<img src={this.props.playerPicURLs[counter]} alt=""/>
@@ -141,7 +141,7 @@ export class PlayersList extends Component<PlayerListProps, any> {
 			counter++;
         }
         return (
-            <ul id="players-list">
+            <ul id="players-list" className="choose-player">
                 {players}     
                 <div className="changable-name" id="add-player-input">
                     <button onClick={this.showInput}>Add</button>

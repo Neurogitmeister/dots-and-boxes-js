@@ -54,40 +54,105 @@
     width: 100%;
 }
 
+
+/* css logic for #players-list:
+*
+*   <ul> has 3 stages (toggle-classes, in order): 'choose-player' and two mutually-exclusive: 'edit-player' and 'reorder-player'.
+*   Each one controls these properties (marked with "//toggles" ):
+*       - visibility of edit-protection overlay 
+*       - disign of color dialog (+ inline animations)
+*       - visibility of delete button (+ inline animations)
+*
+*   overlay has 'onClick()' event that switches class to 'edit-player' from 'choose-player'
+*   class 'reorder-player' is toggled by a button outside of <ul> and in same parent
+*
+*/
 #players-list {
     padding-left: 15px;
     
     li {
         display: flex;
         align-items: center;
-        // position: relative;
-        .button-delete {
-        
+        position: relative;
+        .input-player-color {
+            height: 30px; // toggles
+            width: 5px;   // toggles
+            min-width: 5px; // toggles
+        }
+        .button-delete {      
             position: absolute;
             left: 40px;
-            color: rgba(228, 62, 62, 0);
-            cursor: pointer;
+            color: rgba(228, 62, 62, 0); // toggles
+            cursor: pointer; // toggles
         }
         .changable-name {
             cursor: pointer
         }
-        .input-player-color {
-            height: 32px;
-            width: 7px;
-            min-width: 7px;        
-            // position: absolute;
-            // right: calc(100% - 2px);
+        .overlay-disable-edit {
+            visibility: unset; // toggles
+    
+            z-index: 2;
+            cursor: pointer;
+            width: 100%;
+            height: 100%;
+            position: absolute;
         }
-        &:hover {
-            .button-delete {
-                //color: rgb(228, 62, 62);
-            }
-            .input-player-color {
-                width: 12px;
-            }
+        
+    }
+}
+
+#players-list.choose-player > li {
+    
+    &:hover {
+        
+        .input-player-color {
+            min-width: 12px;
         }
     }
 }
+
+#players-list.edit-player {
+    li {
+        .overlay-disable-edit {
+           visibility: hidden;
+        }
+        &:hover {     
+            .input-player-color {
+                width: 5px;
+                min-width: 5px;
+            }
+        }
+    }
+    li.active {
+       
+        .input-player-color {
+            width: 20px;
+            min-width: 20px;
+            height: 20px;
+            margin-right: 7px;
+            margin-left: -7px;
+            box-shadow: -1px 1px 3px 0px black;
+            cursor: pointer;
+            border-radius: 100%;
+            &::-webkit-color-swatch {
+
+                border-radius: 100%;
+            }      
+        } 
+        &:hover > .input-player-color {
+            width: 20px;
+            min-width: 20px;
+            height: 20px;
+        }
+    }
+}
+
+#players-list.reorder-player > li {
+    .button-delete {
+        color: rgb(228, 62, 62);
+    }
+}
+
 .player-name {
     display: block;
     min-width: 25px;
@@ -102,8 +167,7 @@
 
 .input-player-color {
     cursor: pointer;
-    //border-radius: 100%;
-
+    padding: 0;
     background-color: transparent;
     border: none;
     outline: none;
@@ -113,7 +177,6 @@
     }
     &::-webkit-color-swatch {
         border: none;
-        //border-radius: 100%;
     }
 }
 
@@ -131,6 +194,7 @@
         margin-left: 5px;
     }
 }
+
 .changable-name {
     position: relative;
     input {
