@@ -1,6 +1,6 @@
 import React, {Component} from 'react'
 import '../../styles/GameSettings.scss'
-import { PlayersList, PlayerListProps } from './PlayersList';
+import { PlayersList } from './PlayersList';
 
 export function importAll(r: any) {
     return r.keys().map(r);
@@ -82,16 +82,8 @@ interface GameSettingsModuleProps {
 }
 
 
-interface GameStateFields {
-    columns :       number;
-    rows:           number;
-    playerNames:    string[],
-    playerPicURLs:  string[],
-    playerColors:   string[],
+interface GameStateFields extends GameSettingsList {
     playersCount:   number;
-    firstMove:      string;
-    gamesToWin:     number;
-    dotsSize:       number;
     singleGameTime: string;
     matchTime:      string;
 }
@@ -122,6 +114,7 @@ export default class GameSettings extends Component<GameSettingsModuleProps, Gam
             firstMove:      this.gameSettings.firstMove,
             gamesToWin:     this.gameSettings.gamesToWin,
             dotsSize:       this.gameSettings.dotsSize,
+            dotsColor:      this.gameSettings.dotsColor,
             singleGameTime: singleGameTime,
             matchTime:      matchTime
         }

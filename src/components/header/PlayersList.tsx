@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import  { defaultAvatars, getRandomInt, getRandomColor } from './GameSettings'
 import '../../styles/PlayersList.scss'
-import { stringify } from 'querystring';
 
 export interface PlayerListProps {
 	players: Array<string>
@@ -205,12 +204,23 @@ interface PlayerProps {
 	showInput(e: React.MouseEvent<HTMLButtonElement>) : void,
 	hideInput(e: React.FocusEvent<HTMLInputElement>) : void
 }
+interface PlayerState {
+	playerColor: string
+}
 
-class PlayerOfList extends Component<PlayerProps, any> {
+class PlayerOfList extends Component<PlayerProps, PlayerState> {
 	constructor(props: PlayerProps) {
 		super(props);
-	}
 
+		this.state = {
+			playerColor: this.props.playerColor
+		}
+		this.changeColorLine = this.changeColorLine.bind(this)
+	}
+	changeColorLine(e: React.ChangeEvent<HTMLInputElement>) {
+		console.log(e.currentTarget.value)
+		this.setState({playerColor: e.currentTarget.value})
+	}
 	render() {
 		let {/*isAccount,*/ player, playerColor, playerPicURL, enableEdit, changePlayerColor, enableChoose, deletePlayer, showInput, changePlayerName, hideInput} = this.props;
 		return (<>
@@ -218,13 +228,16 @@ class PlayerOfList extends Component<PlayerProps, any> {
 			<div className="overlay disable-edit" onClick={enableEdit}></div>
 			<div id={player + "-drag-target"} className="overlay drag-target " onClick={function () {}}></div>
 			<div className="player-edit-group">
-				<input className="player-color" type="color" defaultValue={playerColor} onBlur={changePlayerColor} />
+				<input className="player-color" type="color" 
+				defaultValue={playerColor}
+				onChange={this.changeColorLine}
+				onBlur={changePlayerColor} />
 				<span className="button-apply" onClick={enableChoose}>OK</span>
 				<span className="button-cancel" onClick={enableChoose}>X</span>
 				<span className="button-delete" onClick={deletePlayer}>T</span>
 
 			</div>
-			<div className="player-color-avatar"></div>
+			<div className="player-color-avatar" style={{backgroundColor: this.state.playerColor }}></div>
 			{/* {isAccount && 
 				<div className="profile-container">
 					<img src={playerPicURL} alt="" />
