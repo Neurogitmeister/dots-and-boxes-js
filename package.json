@@ -40,6 +40,7 @@
     ]
   },
   "devDependencies": {
-    "@types/jquery": "^3.5.1"
+    "@types/jquery": "^3.5.1",
+    "@types/webpack-env": "^1.15.2"
   }
 }

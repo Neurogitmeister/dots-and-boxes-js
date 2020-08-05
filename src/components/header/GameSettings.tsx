@@ -2,6 +2,27 @@ import React, {Component} from 'react'
 import '../../styles/GameSettings.scss'
 import { PlayersList, PlayerListProps } from './PlayersList';
 
+export function importAll(r: any) {
+    return r.keys().map(r);
+}
+
+export const defaultAvatars = importAll(require.context('../../resources/images/default-avatars', false, /\.(png|jpe?g|svg|gif)$/));
+
+export function getRandomColor() {
+    var letters = '0123456789ABCDEF';
+    var color = '#';
+    for (var i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+}
+
+export function getRandomInt(from : number, to : number) {
+    if (from < to)
+        return Math.floor(Math.random() * (to - from + 1)) + from
+    else return from
+}
+
 interface GameSettingsList {
     columns: number
     rows: number
@@ -22,16 +43,15 @@ let defaultSettings : GameSettingsList = {
     playerColors: ['#333333', '#66ff66', '#9351F4', '#D7A3Af'],
     playerPicURLs: [
         '/static/media/logo.5d5d9eef.svg',
-        '/static/media/logo.5d5d9eef.svg',
-        '/static/media/logo.5d5d9eef.svg',
-        '/static/media/logo.5d5d9eef.svg'
     ],
     firstMove: 'Guest',
     gamesToWin: 1,
     dotsSize: 3,
     dotsColor: '#f06000'
 }
-
+for (let i = 0; i < defaultSettings.playerNames.length; i++)
+    defaultSettings.playerPicURLs.push(defaultAvatars[getRandomInt(0, defaultSettings.playerNames.length)])
+    
 /*validate token and load settings*/
 function fetchGameSettings (username: string ) : GameSettingsList {
 
