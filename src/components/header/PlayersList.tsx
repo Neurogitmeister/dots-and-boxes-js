@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import  { defaultAvatars, getRandomInt, getRandomColor } from './GameSettings'
+import '../../styles/PlayersList.scss'
 
 export interface PlayerListProps {
     players: Array<string>
