@@ -22,7 +22,40 @@
     position: absolute;
 }
 .button-delete {
+    //color: rgba(228, 62, 62, 0);
+    cursor: pointer;
+}
+.button-apply {
+    //color: #82dd5e;
+    cursor: pointer;
+}
+.button-cancel {
 
+}
+
+.circle-quasi-physical {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 20px;
+    height: 20px;
+    min-width: 20px;
+    border-radius: 50%;
+    background-color: #282c34;
+    font-size: 0.7rem;
+    box-shadow:  0px 0px 3px 3px #282c34, -1px -2px 5px 0px grey,  1px 1px 5px 1px black;
+    //box-shadow: -2px -2px 5px 0px grey,  2px 2px 5px 0px #AEAEC0 20%;
+    &:active {
+        width: 24px;
+        height: 24px;
+        min-width: 24px;
+        margin-left: -4px;
+        padding-left: 2px;
+        box-shadow:  inset 5px 5px 10px #24272e, 
+        inset -5px -5px 10px #2c313a,
+         -1px -1px 3px 0px #24272e
+        ;
+    }
 }
 
 #players-list {
@@ -32,16 +65,35 @@
         display: flex;
         align-items: center;
         position: relative;
-        .input-player-color {
+        .player-color-avatar {
+            @extend .input-color-no-border;
             height: 30px; // toggles
             width: 5px;   // toggles
             min-width: 5px; // toggles
+            background-color: #87bfd0 !important;
         }
-        .button-delete {      
+        .player-edit-group {
             position: absolute;
-            left: 40px;
-            color: rgba(228, 62, 62, 0); // toggles
-            cursor: pointer; // toggles
+            bottom: 0;
+            display: flex;
+            align-items: center;
+            height: 40px;
+            .player-color {
+                @extend .input-color-no-border;
+                margin-left: 10px;
+                cursor: pointer;
+                border-radius: 50%;
+                &::-webkit-color-swatch {
+                    margin: 2px;
+                    border-radius: 100%;
+                    box-shadow: 0px 0px 3px 0px black inset;
+                }      
+            } 
+            .button-apply, .button-delete, .button-cancel, .player-color {
+                @extend .circle-quasi-physical;
+                opacity: 0;
+                margin-right: 20px;
+            }
         }
         .changable-name {
             cursor: pointer
@@ -60,50 +112,44 @@
     
     &:hover {
         
-        .input-player-color {
-            min-width: 12px;
+        .player-color-avatar {
+            min-width: 10px;
         }
     }
 }
 
 #players-list.edit-player-toggle {
     li {
+        
         &:hover {     
-            .input-player-color {
+            .player-color-avatar {
                 width: 5px;
                 min-width: 5px;
             }
         }
     }
     li.active {
+        margin-bottom: 30px;
+        .player-edit-group {
+            bottom: -40px;
+            .player-color, .button-apply, .button-cancel,.button-delete {
+                opacity: 1;
+            }
+        }
         .disable-edit {
             visibility: hidden;
         }
-        .input-player-color {
-            width: 20px;
-            min-width: 20px;
-            height: 20px;
-            margin-right: 7px;
-            margin-left: -7px;
-            box-shadow: -1px 1px 3px 0px black;
-            cursor: pointer;
-            border-radius: 100%;
-            &::-webkit-color-swatch {
-
-                border-radius: 100%;
-            }      
-        } 
-        &:hover > .input-player-color {
-            width: 20px;
-            min-width: 20px;
-            height: 20px;
-        }
+        
+        // &:hover > .player-color-avatar {
+        //     width: 5px;
+        //     min-width: 10px;
+        // }
     }
 }
 
 #players-list.reorder-players-toggle > li {
     .button-delete {
-        color: rgb(228, 62, 62);
+        visibility: unset;
     }
     .drag-target {
         visibility: unset;
@@ -122,7 +168,7 @@
     }
 }
 
-.input-player-color {
+.input-color-no-border {
     cursor: pointer;
     padding: 0;
     background-color: transparent;
@@ -146,7 +192,7 @@
         height: 30px;
         width: 30px;
         min-width: 30px;
-        background-color: rgba(112, 112, 112, 0);
+        background-color: rgb(255, 255, 255);
     }
     span {
         margin-left: 5px;
