@@ -15,6 +15,7 @@
     padding-left: 15px;
     
     li {
+        transition: 0.2s linear 0.5s;
         display: flex;
         align-items: center;
         position: relative;
@@ -30,16 +31,30 @@
             display: flex;
             align-items: center;
             height: 40px;
-            .button-color > input {
-                     
-            }
+            transition: 0.2s linear;
+            
             .button-apply, .button-delete, .button-cancel, .button-color {
-                @extend .neuphormic-button-circle;
                 cursor: pointer;
-                opacity: 0;
+                //opacity: 0;
                 height: 30px;
                 width: 30px;
                 margin-right: 20px;
+                div > span, input {
+                    opacity: 0;
+                }
+                .bump-shadow-override {
+                    
+                    background-color: rgba(40, 44, 52, 1);
+                    box-shadow:
+                    0px 0px 4px 4px rgba(40, 44, 52, 1),
+                    -1px -1px 4px 0px rgba(255, 255, 255, 0),
+                    0px 0px 6px 2px rgba(0, 0, 0, 0)
+                    //!important
+                    ;   
+                }
+                @extend .neumorphic-button-circle;
+                
+                
             }
         }
         .changable-name {
@@ -56,7 +71,16 @@
 }
 
 #players-list.choose-player-toggle > li {
-    
+    .player-edit-group  > .button-color, .button-apply, .button-cancel,.button-delete {
+        div {
+
+        }
+        
+    }
+    .player-edit-group {
+        
+        transition: 0.2s linear 0.5s;
+    }
     &:hover {
         
         .player-color-avatar {
@@ -67,7 +91,15 @@
 
 #players-list.edit-player-toggle {
     li {
-        
+        margin-bottom: 0;
+        .player-edit-group {
+            
+            .button-color, .button-apply, .button-cancel,.button-delete {
+                
+                .bump-shadow-override {  transition: 0.3s linear 0.2s; 
+                }
+            }
+        }
         &:hover {     
             .player-color-avatar {
                 width: 5px;
@@ -76,13 +108,30 @@
         }
     }
     li.active {
+        transition: 0.2s linear;
         margin-bottom: 40px;
         .player-edit-group {
             bottom: -40px;
             .button-color, .button-apply, .button-cancel,.button-delete {
-                opacity: 1;
+                
+                .bump-shadow-override {
+                    transition: 0.3s linear; 
+                    background-color: rgba(40, 44, 52, 1);
+                    box-shadow:
+                    0px 0px 4px 4px rgba(40, 44, 52, 1),
+                     -3px -3px 4px 0px rgba(255, 255, 255, 0.5),
+                       1px 2px 6px 2px rgba(0, 0, 0, 1)
+                    ;  
+                   
+                
+                    span, input {
+                        transition: 0.2s linear 0.3s;
+                        opacity: 1;
+                    }
+                } 
+                
             }
-            .button-color > span > .player-color {
+            .button-color > div > .player-color {
                 width: 80%;
                 height: 80%;
             }

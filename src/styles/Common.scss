@@ -8,7 +8,7 @@
 
 
 
-.neuphormic-button {
+.neumorphic-button {
     transition: 0.1s linear 0.1s;
     display: flex;
     justify-content: center;
@@ -19,7 +19,7 @@
     inset -5px -5px 10px #2c313a00,
         -1px -1px 3px 0px #24272e00
     ;
-    span {
+    div {
         transition: 0.1s linear;
         width: 70%;
         height: 70%;
@@ -39,7 +39,7 @@
         inset -5px -5px 10px #2c313a,
          -1px -1px 3px 0px #24272e
         ;
-        span {
+        div {
             background-color: rgba(40, 44, 52, 1);
             box-shadow:
             0px 0px 4px 4px rgba(40, 44, 52, 1),
@@ -50,12 +50,12 @@
     }
 }
 
-.neuphormic-button-circle {
-    @extend .neuphormic-button;
+.neumorphic-button-circle {
+    @extend .neumorphic-button;
     border-radius: 50%;
     
     
-    span {
+    div {
         border-radius: 50%;
     }
 }

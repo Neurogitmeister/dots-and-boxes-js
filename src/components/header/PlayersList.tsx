@@ -229,22 +229,22 @@ class PlayerOfList extends Component<PlayerProps, PlayerState> {
 			<div id={player + "-drag-target"} className="overlay drag-target " onClick={function () {}}></div>
 			<div className="player-edit-group">
 				<div className="button-color">
-					<span>
+					<div  className="bump-shadow-override">
 						<input className="player-color" type="color"
 						defaultValue={playerColor}
 						onChange={this.changeColorLine}
 						onBlur={changePlayerColor} />
-					</span>
+					</div>
 				</div>
-				<div className="button-apply" onClick={enableChoose}>
+				<div className="button-apply" onClick={enableChoose}><div className="bump-shadow-override">
 					<span>OK</span>
-				</div>
-				<div className="button-cancel" onClick={enableChoose}>
+				</div></div>
+				<div className="button-cancel" onClick={enableChoose}><div className="bump-shadow-override">
 					<span>X</span>
-				</div>
-				<div className="button-delete" onClick={deletePlayer}>
+				</div></div>
+				<div className="button-delete" onClick={deletePlayer}><div className="bump-shadow-override">
 					<span>T</span>
-				</div>
+				</div></div>
 
 			</div>
 			<div className="player-color-avatar" style={{backgroundColor: this.state.playerColor }}></div>
