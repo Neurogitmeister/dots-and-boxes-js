@@ -21,40 +21,56 @@
     height: 100%;
     position: absolute;
 }
-.button-delete {
-    //color: rgba(228, 62, 62, 0);
-    cursor: pointer;
-}
-.button-apply {
-    //color: #82dd5e;
-    cursor: pointer;
-}
-.button-cancel {
 
-}
-
-.circle-quasi-physical {
+.neuphormic-button {
+    transition: 0.1s linear 0.1s;
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 20px;
-    height: 20px;
-    min-width: 20px;
-    border-radius: 50%;
-    background-color: #282c34;
-    font-size: 0.7rem;
-    box-shadow:  0px 0px 3px 3px #282c34, -1px -2px 5px 0px grey,  1px 1px 5px 1px black;
-    //box-shadow: -2px -2px 5px 0px grey,  2px 2px 5px 0px #AEAEC0 20%;
-    &:active {
-        width: 24px;
-        height: 24px;
-        min-width: 24px;
-        margin-left: -4px;
-        padding-left: 2px;
-        box-shadow:  inset 5px 5px 10px #24272e, 
+    position: relative;
+    box-shadow:
+    inset 5px 5px 10px #24272e00, 
+    inset -5px -5px 10px #2c313a00,
+        -1px -1px 3px 0px #24272e00
+    ;
+    span {
+        transition: 0.1s linear;
+        width: 70%;
+        height: 70%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: rgba(40, 44, 52, 1);
+        box-shadow:
+        0px 0px 4px 4px rgba(40, 44, 52, 1),
+         -3px -3px 4px 0px rgba(255, 255, 255, 0.5),
+           1px 2px 6px 2px rgba(0, 0, 0, 1)
+        ;    
+    }
+    &:active {  
+        box-shadow:
+        inset 5px 5px 10px #24272e, 
         inset -5px -5px 10px #2c313a,
          -1px -1px 3px 0px #24272e
         ;
+        span {
+            background-color: rgba(40, 44, 52, 1);
+            box-shadow:
+            0px 0px 4px 4px rgba(40, 44, 52, 1),
+            -1px -1px 4px 0px rgba(255, 255, 255, 0),
+            0px 0px 6px 2px rgba(0, 0, 0, 0)
+            ;   
+        }
+    }
+}
+
+.neuphormic-button-circle {
+    @extend .neuphormic-button;
+    border-radius: 50%;
+    
+    
+    span {
+        border-radius: 50%;
     }
 }
 
@@ -77,20 +93,15 @@
             display: flex;
             align-items: center;
             height: 40px;
-            .player-color {
-                @extend .input-color-no-border;
-                margin-left: 10px;
+            .button-color > input {
+                     
+            }
+            .button-apply, .button-delete, .button-cancel, .button-color {
+                @extend .neuphormic-button-circle;
                 cursor: pointer;
-                border-radius: 50%;
-                &::-webkit-color-swatch {
-                    margin: 2px;
-                    border-radius: 100%;
-                    box-shadow: 0px 0px 3px 0px black inset;
-                }      
-            } 
-            .button-apply, .button-delete, .button-cancel, .player-color {
-                @extend .circle-quasi-physical;
                 opacity: 0;
+                height: 30px;
+                width: 30px;
                 margin-right: 20px;
             }
         }
@@ -107,6 +118,15 @@
     }
 }
 
+.player-color {
+    @extend .input-color-no-border;
+    cursor: pointer;
+    border-radius: 50%;
+    &::-webkit-color-swatch {
+        border-radius: 100%;
+        box-shadow: 0px 0px 3px 0px black inset;
+    } 
+}
 #players-list.choose-player-toggle > li {
     
     &:hover {
@@ -128,11 +148,15 @@
         }
     }
     li.active {
-        margin-bottom: 30px;
+        margin-bottom: 40px;
         .player-edit-group {
             bottom: -40px;
-            .player-color, .button-apply, .button-cancel,.button-delete {
+            .button-color, .button-apply, .button-cancel,.button-delete {
                 opacity: 1;
+            }
+            .button-color > span > .player-color {
+                width: 80%;
+                height: 80%;
             }
         }
         .disable-edit {

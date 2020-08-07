@@ -62,7 +62,7 @@ export class PlayersList extends Component<PlayerListProps, any> {
 	}
 	// search in parent element of e.target for a first child element 
 	// and use it's contents as a filter for state.players
-	deletePlayer(e: React.MouseEvent<HTMLLIElement>) {
+	deletePlayer(e: React.MouseEvent<HTMLDivElement>) {
 
 		let name = e.currentTarget.parentElement === null
 			? null
@@ -198,9 +198,9 @@ interface PlayerProps {
 	playerPicURL: string,
 	enableEdit(e: React.MouseEvent<HTMLDivElement>): void,
 	enableChoose(e: React.MouseEvent<HTMLDivElement>) : void,
+	deletePlayer(e: React.MouseEvent<HTMLDivElement>) : void,
 	changePlayerColor(e: React.FocusEvent<HTMLInputElement>) : void,
 	changePlayerName(e: React.KeyboardEvent<HTMLInputElement>) : void,
-	deletePlayer(e: React.MouseEvent<HTMLLIElement>) : void,
 	showInput(e: React.MouseEvent<HTMLButtonElement>) : void,
 	hideInput(e: React.FocusEvent<HTMLInputElement>) : void
 }
@@ -228,13 +228,23 @@ class PlayerOfList extends Component<PlayerProps, PlayerState> {
 			<div className="overlay disable-edit" onClick={enableEdit}></div>
 			<div id={player + "-drag-target"} className="overlay drag-target " onClick={function () {}}></div>
 			<div className="player-edit-group">
-				<input className="player-color" type="color" 
-				defaultValue={playerColor}
-				onChange={this.changeColorLine}
-				onBlur={changePlayerColor} />
-				<span className="button-apply" onClick={enableChoose}>OK</span>
-				<span className="button-cancel" onClick={enableChoose}>X</span>
-				<span className="button-delete" onClick={deletePlayer}>T</span>
+				<div className="button-color">
+					<span>
+						<input className="player-color" type="color"
+						defaultValue={playerColor}
+						onChange={this.changeColorLine}
+						onBlur={changePlayerColor} />
+					</span>
+				</div>
+				<div className="button-apply" onClick={enableChoose}>
+					<span>OK</span>
+				</div>
+				<div className="button-cancel" onClick={enableChoose}>
+					<span>X</span>
+				</div>
+				<div className="button-delete" onClick={deletePlayer}>
+					<span>T</span>
+				</div>
 
 			</div>
 			<div className="player-color-avatar" style={{backgroundColor: this.state.playerColor }}></div>
