@@ -1,7 +1,3 @@
-#settings-players-list > p {
-    display: inline-block;
-}
-
 /* css logic for #players-list:
 *
 *   <ul> has 3 stages (toggle-classes, in order): 'choose-player' and two mutually-exclusive: 'edit-player' and 'reorder-player'.
@@ -14,65 +10,6 @@
 *   class 'reorder-player' is toggled by a button outside of <ul> and in same parent
 *
 */
-
-.overlay {
-    z-index: 1000;
-    width: 100%;
-    height: 100%;
-    position: absolute;
-}
-
-.neuphormic-button {
-    transition: 0.1s linear 0.1s;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: relative;
-    box-shadow:
-    inset 5px 5px 10px #24272e00, 
-    inset -5px -5px 10px #2c313a00,
-        -1px -1px 3px 0px #24272e00
-    ;
-    span {
-        transition: 0.1s linear;
-        width: 70%;
-        height: 70%;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        background-color: rgba(40, 44, 52, 1);
-        box-shadow:
-        0px 0px 4px 4px rgba(40, 44, 52, 1),
-         -3px -3px 4px 0px rgba(255, 255, 255, 0.5),
-           1px 2px 6px 2px rgba(0, 0, 0, 1)
-        ;    
-    }
-    &:active {  
-        box-shadow:
-        inset 5px 5px 10px #24272e, 
-        inset -5px -5px 10px #2c313a,
-         -1px -1px 3px 0px #24272e
-        ;
-        span {
-            background-color: rgba(40, 44, 52, 1);
-            box-shadow:
-            0px 0px 4px 4px rgba(40, 44, 52, 1),
-            -1px -1px 4px 0px rgba(255, 255, 255, 0),
-            0px 0px 6px 2px rgba(0, 0, 0, 0)
-            ;   
-        }
-    }
-}
-
-.neuphormic-button-circle {
-    @extend .neuphormic-button;
-    border-radius: 50%;
-    
-    
-    span {
-        border-radius: 50%;
-    }
-}
 
 #players-list {
     padding-left: 15px;
@@ -118,15 +55,6 @@
     }
 }
 
-.player-color {
-    @extend .input-color-no-border;
-    cursor: pointer;
-    border-radius: 50%;
-    &::-webkit-color-swatch {
-        border-radius: 100%;
-        box-shadow: 0px 0px 3px 0px black inset;
-    } 
-}
 #players-list.choose-player-toggle > li {
     
     &:hover {
@@ -191,35 +119,15 @@
     }
 }
 
-.input-color-no-border {
-    cursor: pointer;
-    padding: 0;
-    background-color: transparent;
-    border: none;
-    outline: none;
-    -webkit-appearance: none;
-    &::-webkit-color-swatch-wrapper {
-        padding: 0;
-    }
-    &::-webkit-color-swatch {
-        border: none;
-    }
-}
 
-.profile-container {
-    display: flex;
-    align-items: center;
-    height: 40px;
-    padding: 5px 0px 5px;
-    img {
-        height: 30px;
-        width: 30px;
-        min-width: 30px;
-        background-color: rgb(255, 255, 255);
-    }
-    span {
-        margin-left: 5px;
-    }
+.player-color {
+    @extend .input-color-no-border;
+    cursor: pointer;
+    border-radius: 50%;
+    &::-webkit-color-swatch {
+        border-radius: 100%;
+        box-shadow: 0px 0px 3px 0px black inset;
+    } 
 }
 
 .changable-name {
@@ -250,4 +158,4 @@
     }
 }
 
-// test
+@import './Common.scss'

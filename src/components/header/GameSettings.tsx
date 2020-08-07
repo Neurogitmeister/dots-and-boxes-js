@@ -40,7 +40,7 @@ let defaultSettings : GameSettingsList = {
     columns: 5,
     rows: 5,
     playerNames: ['Guest','Kolya','Lena','Vika Petrovna Santa Maria Herra'],
-    playerColors: ['#282c34', '#66ff66', '#9351F4', '#D7A3Af'],
+    playerColors: ['#00ffff', '#66ff66', '#9351F4', '#D7A3Af'],
     playerPicURLs: [],
     firstMove: 'Guest',
     gamesToWin: 1,
