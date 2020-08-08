@@ -139,7 +139,7 @@ export class PlayersList extends Component<PlayerListProps, any> {
 		}
 
 	}
-	showInput(e: React.MouseEvent<HTMLButtonElement>) {
+	showInput(e: React.MouseEvent<HTMLDivElement>) {
 		e.preventDefault();
 		let el = e.currentTarget.parentElement
 		if (el) {
@@ -182,8 +182,10 @@ export class PlayersList extends Component<PlayerListProps, any> {
 		return (
 			<ul id="players-list" className="choose-player-toggle">
 				{players}     
-				<div className="changable-name" id="add-player-input">
-					<button onClick={this.showInput}>Add</button>
+				<div id="add-player-input" className="neumorphic-button-circle changable-name">
+					<div className="bump-shadow-override" onClick={this.showInput}>
+						<span>+</span>
+					</div>
 					<input onKeyPress={this.addPlayer} onBlur={this.hideInput} />
 				</div>
 			</ul>
@@ -201,7 +203,7 @@ interface PlayerProps {
 	deletePlayer(e: React.MouseEvent<HTMLDivElement>) : void,
 	changePlayerColor(e: React.FocusEvent<HTMLInputElement>) : void,
 	changePlayerName(e: React.KeyboardEvent<HTMLInputElement>) : void,
-	showInput(e: React.MouseEvent<HTMLButtonElement>) : void,
+	showInput(e: React.MouseEvent<HTMLDivElement>) : void,
 	hideInput(e: React.FocusEvent<HTMLInputElement>) : void
 }
 interface PlayerState {
@@ -229,22 +231,22 @@ class PlayerOfList extends Component<PlayerProps, PlayerState> {
 			<div id={player + "-drag-target"} className="overlay drag-target " onClick={function () {}}></div>
 			<div className="player-edit-group">
 				<div className="button-color">
-					<span>
+					<div  className="bump-shadow-override">
 						<input className="player-color" type="color"
 						defaultValue={playerColor}
 						onChange={this.changeColorLine}
 						onBlur={changePlayerColor} />
-					</span>
+					</div>
 				</div>
-				<div className="button-apply" onClick={enableChoose}>
+				<div className="button-apply" onClick={enableChoose}><div className="bump-shadow-override">
 					<span>OK</span>
-				</div>
-				<div className="button-cancel" onClick={enableChoose}>
+				</div></div>
+				<div className="button-cancel" onClick={enableChoose}><div className="bump-shadow-override">
 					<span>X</span>
-				</div>
-				<div className="button-delete" onClick={deletePlayer}>
+				</div></div>
+				<div className="button-delete" onClick={deletePlayer}><div className="bump-shadow-override">
 					<span>T</span>
-				</div>
+				</div></div>
 
 			</div>
 			<div className="player-color-avatar" style={{backgroundColor: this.state.playerColor }}></div>

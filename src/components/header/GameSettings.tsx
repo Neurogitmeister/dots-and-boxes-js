@@ -202,71 +202,92 @@ export default class GameSettings extends Component<GameSettingsModuleProps, Gam
         return (
             <div id='settings-popup'>
                 <form onSubmit={this.mySubmit}>
-                    <h2 id="game-settings-header">GAME SETTINGS</h2>
-                    <h2>Gameplay</h2>
-                    <RangeInput boundState="columns" onHandleInputChange={this.updateStateValue}
-                                id={"input-columns"} label={"Columns"}
-                                max={20} min={3} value={this.state.columns}
-                    />
-                    <RangeInput boundState="rows" onHandleInputChange={this.updateStateValue}
-                                id={"input-rows"} label={"Rows"}
-                                max={20} min={3} value={this.state.rows}
-                    />
-                    
 
-                    <div id="settings-players-list">
-                        <span>Players</span>
-                        <PlayersList onListChange={this.updatePlayersList} 
-                            players={this.state.playerNames} 
-                            playerColors={this.state.playerColors}
-                            playerPicURLs={this.state.playerPicURLs}
-                        />
+                        <h2 id="game-settings-header">GAME SETTINGS</h2>
+                        <h2>Gameplay</h2>
+                    <div id="single-game-settings" className="settings-group">
+                        <RangeInput boundState="columns" onHandleInputChange={this.updateStateValue}
+                                    id={"input-columns"} label={"Columns"}
+                                    max={20} min={3} value={this.state.columns}
+                                    />
+                        <RangeInput boundState="rows" onHandleInputChange={this.updateStateValue}
+                                    id={"input-rows"} label={"Rows"}
+                                    max={20} min={3} value={this.state.rows}
+                                    />
+                        
+
+                        <div id="settings-players-list">
+                            <span>Players :</span>
+                            <PlayersList onListChange={this.updatePlayersList} 
+                                players={this.state.playerNames} 
+                                playerColors={this.state.playerColors}
+                                playerPicURLs={this.state.playerPicURLs}
+                                />
+                        </div>
+
+
+                        <div className="row">
+                            <p className="col-md-6">First move of player:</p>
+                            <div className="col-md-6">
+                                <input name="sglsbbxxcvcx"
+                                    list="players-datalist"
+                                    id="input-settings-players-move"
+                                    onFocus={this.selectNewPlayer}
+                                    onBlur={this.updateFirstMove}
+                                    defaultValue={this.state.firstMove}/>
+
+
+                                <datalist id="players-datalist">
+                                    {players}
+                                </datalist>
+
+
+                            </div>
+                        </div>
+
+                    {/* </div>
+
+ */}
+
+                        <RangeInput boundState={"gamesToWin"} onHandleInputChange={this.updateStateValue}
+                            id={"input-games-to-win"} label={"Games to win"}
+                            min={1} max={10} value={this.state.gamesToWin}
+                            />
                     </div>
-
-
-                    <div className="row">
-                        <p className="col-md-6">First move of player:</p>
-                        <div className="col-md-6">
-                            <input name="sglsbbxxcvcx"
-                                   list="players-datalist"
-                                   id="input-settings-players-move"
-                                   onFocus={this.selectNewPlayer}
-                                   onBlur={this.updateFirstMove}
-                                   defaultValue={this.state.firstMove}/>
-
-
-                            <datalist id="players-datalist">
-                                {players}
-                            </datalist>
-
-
+                    <h2>Time estimates</h2>
+                    <div id="match-settings" className="settings-group">
+                        <div className="estimate-calc row">
+                            <p className="col-6">Single game:</p>
+                            <span className="col-6">{this.state.singleGameTime}</span>
+                        </div>
+                        <div className="estimate-calc row" >
+                            <p className="col-6">Match:</p>
+                            <span className="col-6">{this.state.matchTime}</span>
                         </div>
                     </div>
 
-                    <div className="estimate-calc row">
-                        <p className="col-6">Estimated single game time:</p>
-                        <span className="col-6">{this.state.singleGameTime}</span>
-                    </div>
-
-                    <RangeInput boundState={"gamesToWin"} onHandleInputChange={this.updateStateValue}
-                        id={"input-games-to-win"} label={"Games to win"}
-                        min={1} max={10} value={this.state.gamesToWin}
-                    />
-
-                    <div className="estimate-calc row">
-                        <p className="col-6">Estimated match time:</p>
-                        <span className="col-6">{this.state.matchTime}</span>
-                    </div>
-
                     <h2>Graphics</h2>
-                    <div className="md2">
-                        <RangeInput boundState="dotsSize" onHandleInputChange={this.updateStateValue}
-                            id={"input-dots-size"} label={"Dots size"}
-                            max={20} min={3} value={this.state.dotsSize}
-                        />
-                        <div className="color-dialog">
-                            <label htmlFor="">Dots color</label>
-                            <input type="color" id='input-dots-color'/>
+                    <div className="settings-group">
+                        <div className="row">
+                            <div className="col-7">
+                                <RangeInput boundState="dotsSize" onHandleInputChange={this.updateStateValue}
+                                id={"input-dots-size"} label={"Dots size"}
+                                max={9} min={3} step={2} value={this.state.dotsSize}
+                                />
+                            </div>
+                            <div className="col-5">
+                                <label htmlFor="input-dots-color">Dots color</label>
+                                <div className="button-color neumorphic-button-circle">
+                                    <div>    
+                                        <input type="color"
+                                        id='input-dots-color'
+                                        className="player-color"
+                                        defaultValue={this.state.dotsColor}
+                                        style={{width: '80%', height: '80%'}}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </form>
@@ -278,6 +299,7 @@ export default class GameSettings extends Component<GameSettingsModuleProps, Gam
 interface RangeInputProps {
     min: number
     max: number
+    step?: number
     value: number
     id: string
     label: string
@@ -298,7 +320,7 @@ class RangeInput extends Component<RangeInputProps, any>{
             <div className="range">
                 <label htmlFor={this.props.id}>{this.props.label}</label>
                 <input type="range" 
-                    id={this.props.id} max={this.props.max} min={this.props.min} // <-- load from props
+                    id={this.props.id} max={this.props.max} min={this.props.min} step={this.props.step}// <-- load from props
                     value={this.props.value} // <-- load from state
                     onChange={this.handleInputChange} // <-- change state while changing input
                 />
