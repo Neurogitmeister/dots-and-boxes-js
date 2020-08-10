@@ -23,7 +23,7 @@ export function getRandomInt(from : number, to : number) {
     else return from
 }
 
-interface GameSettingsList {
+export interface GameSettingsList {
     columns: number
     rows: number
     playerNames: Array<string>
