@@ -1,143 +1,186 @@
-import React, { Component } from 'react';
+import React, { Component } from 'react'
 import  { defaultAvatars, getRandomInt, getRandomColor } from './GameSettings'
 import '../../styles/PlayersList.scss'
+import { v4 as uuidv4 } from 'uuid'
+
+export class playerData {
+	login: string
+	playerName: string
+	playerPicURL : string
+	playerColor: string
+
+	constructor(login: string, name: string, picURL: string, color: string){
+		this.login = login
+		this.playerName = name
+		this.playerPicURL = picURL
+		this.playerColor = color
+	}
+}
 
 export interface PlayerListProps {
-	players: Array<string>
-	playerColors: Array<string>
-	playerPicURLs : Array<string>
-	onListChange(players: string[], playerColors: string[]): void
+	playerDataList : Array<playerData>
+	addPlayerData(player: playerData): void
+	deletePlayerData(login: string): void
+	changePlayerData(player: playerData): void
 }
 
 export class PlayersList extends Component<PlayerListProps, any> {
 	constructor(props: PlayerListProps) {
 		super(props);
-		this.addPlayer = this.addPlayer.bind(this);
+		this.setListEditMode = this.setListEditMode.bind(this);
+		this.addLocalPlayer = this.addLocalPlayer.bind(this);
 		this.deletePlayer = this.deletePlayer.bind(this);
-		this.changePlayerColor = this.changePlayerColor.bind(this);
-		this.changePlayerName = this.changePlayerName.bind(this);
+		this.changePlayerData = this.changePlayerData.bind(this);
+		// this.changePlayerName = this.changePlayerName.bind(this);
+		this.state = {
+			listEditMode : "choose-player-toggle"
+		}
 	}
 
-	accountPos = 0;
+	profilePos = 0;
 	
-	enableEdit(e: React.MouseEvent<HTMLDivElement>) {
-		let el = e.currentTarget.parentElement === null 
-		? null
-		: e.currentTarget.parentElement.parentElement
-		if (el && !el.getElementsByClassName("active").length) {
-			
-			el.className = el.className.split(" ")
-				.filter(_class => _class.substr(_class.length - 7, 7) !== "-toggle")
-				.join(" ").concat(" edit-player-toggle")
-			el = e.currentTarget.parentElement
-			if (el)
-				el.className = el.className.concat(" active")
+	setListEditMode(mode: string) {
+		let newState = {...this.state}
+		newState.listEditMode = mode
+		this.setState(newState)
+	}
+
+	enableReorder(e: React.MouseEvent<HTMLDivElement>) {
+		this.setListEditMode("reorder-players-toggle")
+	}
+
+	// search in parent element of e.target for a first child element 
+	// and use it's contents as a filter for state.players
+	deletePlayer(currPlayerLogin: string) {
+
+		if (currPlayerLogin && currPlayerLogin !== this.props.playerDataList[this.profilePos].login) {
+			this.props.deletePlayerData(currPlayerLogin);
 		}
+
+	}
+
+	addLocalPlayer(e: React.KeyboardEvent<HTMLInputElement>) {
+
+		var x = e.which || e.keyCode;
+		if (x === 13) {
+			e.preventDefault();
+			
+			this.props.addPlayerData({
+				login : uuidv4(),
+				playerName: e.currentTarget.value,
+				playerColor: getRandomColor(),
+				playerPicURL: defaultAvatars[getRandomInt(0, defaultAvatars.length - 1)] 
+			})
+		}
+	}
+	changePlayerData(player: playerData){
+		this.props.changePlayerData(player)
+	}
+	
+	render() {
+		let players: Array<object> = [];
+		let max = this.props.playerDataList.length;
+		for (let counter = 0; counter < max; counter++ ) {
+			players.push(
+				<PlayerOfList
+					key={this.props.playerDataList[counter].login}
+					// props:
+					isActive={false}
+					// login={this.props.playerDataList[counter].login}
+					// playerName={this.props.playerName}
+					// playerColor={this.props.playerColors[counter]}
+					// playerPicURL={this.props.playerPicURLs[counter]}
+					player={this.props.playerDataList[counter]}
+
+					setListEditMode={this.setListEditMode}
+					changePlayerData={this.changePlayerData}
+					deletePlayer={this.deletePlayer}
+				/>
+			);
+		}
+		return (
+			<ul id="players-list" className={"" + this.state.listEditMode}>
+				{players}	
+				<div id="add-player-input" className="neumorphic-button-circle changable-name" onClick={()=>{}}>
+					<div className="bump-shadow-override">
+						<span>+</span>
+					</div>
+				</div>
+				
+				{/* 
+					FIX THIS :
+					<PlayerOfList
+					// props:
+					isActive={false}
+					login={uuidv4()}
+					playerName={""}
+					playerColor={this.props.playerColors[counter]}
+					playerPicURL={this.props.playerPicURLs[counter]}
+					setListEditMode={this.setListEditMode}
+					changePlayerColor={this.changePlayerColor}
+					changePlayerName={this.changePlayerName}
+					deletePlayer={this.deletePlayer}
+				/> */}
+			</ul>
+		);
+	}
+}
+
+interface PlayerProps {
+	isActive?: boolean,
+	player: playerData,
+	setListEditMode(mode : string) : void,
+	changePlayerData(player: playerData): void,
+	deletePlayer(login: string): void,
+	// changePlayerColor(e: React.FocusEvent<HTMLInputElement>) : void,
+	// changePlayerName(e: React.KeyboardEvent<HTMLInputElement>) : void,
+	// deletePlayer(e: React.MouseEvent<HTMLDivElement>) : void,
+}
+interface PlayerState {
+	playerColor: string,
+	isActive: boolean
+}
+
+class PlayerOfList extends Component<PlayerProps, PlayerState> {
+	constructor(props: PlayerProps) {
+		super(props);
+		this.state = {
+			playerColor: this.props.player.playerColor,
+			isActive : !!this.props.isActive
+		}
+		this.changeColorSelf = this.changeColorSelf.bind(this)
+		this.changePlayerName = this.changePlayerName.bind(this)
+		this.changePlayerColor = this.changePlayerColor.bind(this)
+		this.deletePlayer = this.deletePlayer.bind(this)
+		this.enableChoose = this.enableChoose.bind(this)
+		this.enableEdit = this.enableEdit.bind(this)
+	}
+	changeColorSelf(e: React.ChangeEvent<HTMLInputElement>) {
+		this.setState({...this.state, playerColor: e.currentTarget.value})
+	}
+	changePlayerName(e: React.KeyboardEvent<HTMLInputElement>) {
+		var x = e.which || e.keyCode;
+		if (x === 13) {
+			e.preventDefault();
+			this.props.changePlayerData({...this.props.player, playerName: e.currentTarget.value })
+		}
+	}
+	changePlayerColor(e: React.ChangeEvent<HTMLInputElement>) {
+		console.log(e.currentTarget.value)
+		this.props.changePlayerData({...this.props.player, playerColor: e.currentTarget.value})
+	}
+	deletePlayer(e: React.MouseEvent<HTMLDivElement>) {
+		this.props.deletePlayer(this.props.player.login)
+	}
+	enableEdit(e: React.MouseEvent<HTMLDivElement>) {
+		this.setState({...this.state, isActive: true})
+		this.props.setListEditMode("edit-player-toggle")
 		
 	}
 	enableChoose(e: React.MouseEvent<HTMLDivElement>) {
-		let el = e.currentTarget.parentElement === null 
-		? null
-		: e.currentTarget.parentElement.parentElement === null
-		? null 
-		: e.currentTarget.parentElement.parentElement.parentElement;
-		if (el) {
-			el.className = el.className.split(" ")
-				.filter(_class => _class.substr(_class.length - 7, 7) !== "-toggle")
-				.join(" ").concat(" choose-player-toggle")
-		}
-		el = e.currentTarget.parentElement === null
-		? null
-		: e.currentTarget.parentElement.parentElement;
-		if (el) 
-		el.className = el.className.split(" ").filter(_class => _class !== "active").join(" ");
-	}
-	enableReorder(e: React.MouseEvent<HTMLDivElement>) {
-		let el = e.currentTarget.parentElement;
-		if (el) {
-			el.className = el.className.split(" ")
-				.filter(_class => _class.substr(_class.length - 7, 7) !== "-toggle")
-				.join(" ").concat(" reorder-players-toggle")
-		}
-	}
-	// search in parent element of e.target for a first child element 
-	// and use it's contents as a filter for state.players
-	deletePlayer(e: React.MouseEvent<HTMLDivElement>) {
-
-		let name = e.currentTarget.parentElement === null
-			? null
-			: e.currentTarget.parentElement.parentElement === null
-			? null
-			: e.currentTarget.parentElement.parentElement.id;
-		//if element was found then assign filtered array to props.players
-		// (conditions to restrict deleting a player are still in development)
-		if (name !== this.props.players[this.accountPos]) {
-			let newList = this.props.players.filter(
-				(_name: string) => (_name !== name));
-			let newColorList = this.props.playerColors
-			.filter((id: string) => (name && (+id !== this.props.players.indexOf(name))));
-			this.props.onListChange(newList, newColorList);
-		}
-
-	}
-
-	addPlayer(e: React.KeyboardEvent<HTMLInputElement>) {
-
-		var x = e.which || e.keyCode;
-		if (x === 13) {
-			e.preventDefault();
-			let name = e.currentTarget.value;
-			if (this.props.players.indexOf(name) === -1) {
-				this.props.players.push(e.currentTarget.value);
-				this.props.playerColors.push(getRandomColor());
-				// for (let i = 0; i < 100; i++) {
-				//     console.log(this.getRandomInt(0, this.defaultAvatars.length - 1))
-				// }
-				this.props.playerPicURLs.push(defaultAvatars[getRandomInt(0, defaultAvatars.length - 1)]);
-				console.log(defaultAvatars.length)
-				e.currentTarget.value = "";
-				this.props.onListChange(this.props.players, this.props.playerColors);
-				let el = e.currentTarget.parentElement 
-				if (el)
-					el.className = el.className.split(" ").filter(_class => _class !== "active").join(" ");
-				console.log(this.props)
-			}
-		}
-	}
-	changePlayerName(e: React.KeyboardEvent<HTMLInputElement>){
-		var x = e.which || e.keyCode;
-		if (x === 13) {
-			e.preventDefault();
-			let newName = e.currentTarget.value;
-			let el = e.currentTarget.parentElement === null
-			? null
-			: e.currentTarget.parentElement.getElementsByClassName("player-name")[0];
-			if (el) {
-				let prevIndex = this.props.players.indexOf(el.innerHTML)
-				let index = this.props.players.indexOf(newName)
-				if ( index === -1 ) {
-					this.props.players[prevIndex] = newName
-					this.props.onListChange(this.props.players, this.props.playerColors);
-				}
-			}
-		}
-	}
-	
-	changePlayerColor(e: React.FocusEvent<HTMLInputElement>) {
-		let el = e.currentTarget.parentElement === null
-			? null
-			: e.currentTarget.parentElement.parentElement === null
-			? null
-			: e.currentTarget.parentElement.parentElement.getElementsByClassName("player-name")[0];
-		if (el) {
-
-			let index = this.props.players.indexOf(el.innerHTML);
-			console.log(el.innerHTML + " on position " + index)
-			let newColors = this.props.playerColors;
-			newColors[index] = e.currentTarget.value;
-			this.props.onListChange(this.props.players, newColors);
-		}
-
+		this.setState({...this.state, isActive: false})
+		this.props.setListEditMode("choose-player-toggle")
+		
 	}
 	showInput(e: React.MouseEvent<HTMLDivElement>) {
 		e.preventDefault();
@@ -158,112 +201,44 @@ export class PlayersList extends Component<PlayerListProps, any> {
 			el.className = el.className.split(" ").filter(_class => _class !== "active").join(" ");
 	}
 	render() {
-		let players: Array<object> = [];
-		let counter = 0;
-		for (let player of this.props.players) {
-			players.push(
-				<li key={player} id={player}>
-					<PlayerOfList
-						player={player}
-						playerColor={this.props.playerColors[counter]}
-						playerPicURL={this.props.playerPicURLs[counter]}
-						enableEdit={this.enableEdit}
-						changePlayerColor={this.changePlayerColor}
-						enableChoose={this.enableChoose}
-						deletePlayer={this.deletePlayer}
-						showInput={this.showInput}
-						changePlayerName={this.changePlayerName}
-						hideInput={this.hideInput} 
-					/>
-				</li>
-			);
-			counter++;
-		}
-		return (
-			<ul id="players-list" className="choose-player-toggle">
-				{players}     
-				<div id="add-player-input" className="neumorphic-button-circle changable-name">
-					<div className="bump-shadow-override" onClick={this.showInput}>
-						<span>+</span>
-					</div>
-					<input onKeyPress={this.addPlayer} onBlur={this.hideInput} />
-				</div>
-			</ul>
-		);
-	}
-}
-
-interface PlayerProps {
-	//isAccount : boolean,
-	player : string,
-	playerColor: string,
-	playerPicURL: string,
-	enableEdit(e: React.MouseEvent<HTMLDivElement>): void,
-	enableChoose(e: React.MouseEvent<HTMLDivElement>) : void,
-	deletePlayer(e: React.MouseEvent<HTMLDivElement>) : void,
-	changePlayerColor(e: React.FocusEvent<HTMLInputElement>) : void,
-	changePlayerName(e: React.KeyboardEvent<HTMLInputElement>) : void,
-	showInput(e: React.MouseEvent<HTMLDivElement>) : void,
-	hideInput(e: React.FocusEvent<HTMLInputElement>) : void
-}
-interface PlayerState {
-	playerColor: string
-}
-
-class PlayerOfList extends Component<PlayerProps, PlayerState> {
-	constructor(props: PlayerProps) {
-		super(props);
-
-		this.state = {
-			playerColor: this.props.playerColor
-		}
-		this.changeColorLine = this.changeColorLine.bind(this)
-	}
-	changeColorLine(e: React.ChangeEvent<HTMLInputElement>) {
-		console.log(e.currentTarget.value)
-		this.setState({playerColor: e.currentTarget.value})
-	}
-	render() {
-		let {/*isAccount,*/ player, playerColor, playerPicURL, enableEdit, changePlayerColor, enableChoose, deletePlayer, showInput, changePlayerName, hideInput} = this.props;
-		return (<>
+		let { playerName, login, playerColor, playerPicURL} = this.props.player
+		// let { changePlayerData, deletePlayer } = this.props
+		return (<li id={login} className={this.state.isActive? "active" : ""}>
 			
-			<div className="overlay disable-edit" onClick={enableEdit}></div>
-			<div id={player + "-drag-target"} className="overlay drag-target " onClick={function () {}}></div>
+			<div className="overlay disable-edit" onClick={this.enableEdit}></div>
+			<div id={login + "-drag-target"} className="overlay drag-target " onClick={function () {}}></div>
+			
 			<div className="player-edit-group">
 				<div className="button-color">
 					<div  className="bump-shadow-override">
 						<input className="player-color" type="color"
 						defaultValue={playerColor}
-						onChange={this.changeColorLine}
-						onBlur={changePlayerColor} />
+						onChange={this.changeColorSelf}
+						onBlur={this.changePlayerColor} 
+						/>
 					</div>
 				</div>
-				<div className="button-apply" onClick={enableChoose}><div className="bump-shadow-override">
+				<div className="button-apply" onClick={this.enableChoose}><div className="bump-shadow-override">
 					<span>OK</span>
 				</div></div>
-				<div className="button-cancel" onClick={enableChoose}><div className="bump-shadow-override">
+				<div className="button-cancel" onClick={this.enableChoose}><div className="bump-shadow-override">
 					<span>X</span>
 				</div></div>
-				<div className="button-delete" onClick={deletePlayer}><div className="bump-shadow-override">
+				<div className="button-delete" onClick={this.deletePlayer}><div className="bump-shadow-override">
 					<span>T</span>
 				</div></div>
 
 			</div>
 			<div className="player-color-avatar" style={{backgroundColor: this.state.playerColor }}></div>
-			{/* {isAccount && 
-				<div className="profile-container">
-					<img src={playerPicURL} alt="" />
-					<span className="player-name">{player}</span>       
-				</div>
-			}
-			{!isAccount &&  */}
+		
 				<div className="profile-container changable-name">
 					<img src={playerPicURL} alt="" />
-					<span onClick={showInput} className="player-name">{player}</span>                        
-					<input className="some-class" onKeyPress={changePlayerName} onBlur={hideInput} defaultValue={player} />
+					<span onClick={this.showInput} className="player-name">{playerName}</span>                        
+					<input className="some-class" onKeyPress={this.changePlayerName} onBlur={this.hideInput} defaultValue={playerName} />
 				</div>
-			{/* } */}
-		</>);
+
+			
+		</li>);
   	}
 
 }

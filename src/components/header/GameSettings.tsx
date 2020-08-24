@@ -1,6 +1,6 @@
 import React, {Component} from 'react'
 import '../../styles/GameSettings.scss'
-import { PlayersList } from './PlayersList';
+import { PlayersList, playerData } from './PlayersList';
 
 export function importAll(r: any) {
     return r.keys().map(r);
@@ -26,9 +26,7 @@ export function getRandomInt(from : number, to : number) {
 export interface GameSettingsList {
     columns: number
     rows: number
-    playerNames: Array<string>
-    playerPicURLs: Array<string>
-    playerColors: Array<string>
+    playerDataList: Array<playerData>
     firstMove: string
     gamesToWin: number
     dotsSize: number
@@ -39,33 +37,49 @@ export interface GameSettingsList {
 let defaultSettings : GameSettingsList = {
     columns: 5,
     rows: 5,
-    playerNames: ['Guest','Kolya','Lena','Vika Petrovna Santa Maria Herra'],
-    playerColors: ['#00ffff', '#66ff66', '#9351F4', '#D7A3Af'],
-    playerPicURLs: [],
-    firstMove: 'Guest',
+    playerDataList: [],
+    firstMove: '',
     gamesToWin: 1,
     dotsSize: 3,
     dotsColor: '#f06000'
 }
-for (let i = 0; i < defaultSettings.playerNames.length; i++)
-    defaultSettings.playerPicURLs.push(defaultAvatars[getRandomInt(0, defaultSettings.playerNames.length)])
+/*
+    playerNames: ['Guest','Kolya','Lena','Vika Petrovna Santa Maria Herra'],
+    playerColors: ['#00ffff', '#66ff66', '#9351F4', '#D7A3Af'],
+    playerPicURLs: [],
+*/
+    defaultSettings.playerDataList[0] = new playerData('guest0', 'Guest', '', '#00ffff')
+    defaultSettings.playerDataList[1] = new playerData('kolya228', 'Kolya', '', '#00ffff')
+    defaultSettings.playerDataList[2] = new playerData('lenusik1994', 'Lena', '', '#00ffff')
+    defaultSettings.playerDataList[3] = new playerData('vikapetrovasantamariaherra', 'Vika Petrova Santa Maria Herra', '', '#00ffff')
+for (let player of defaultSettings.playerDataList)
+    player.playerPicURL = defaultAvatars[getRandomInt(0, defaultAvatars.length - 1)]
     
 /*validate token and load settings*/
 function fetchGameSettings (username: string ) : GameSettingsList {
-
+    console.log("fetching...")
+        let players : Array<playerData> = []
+        players[0] = new playerData(username, username, '#333333', '')
+        players[1] = new playerData('petya', 'Petya', '#229922', '')
+        players[2] = new playerData('vasya', 'Vasya', '#2299ff', '')
+        players[3] = new playerData('kolya', 'Kolya', '#f00000', '')
+        for (let player of players){
+            player.playerPicURL = '../../resources/images/icons/logo.svg'
+        }
         let gameSettings : GameSettingsList;
         gameSettings = {
             /*fetch settings from cookies here (delete code inside below)*/
             columns: 15,
             rows: 15,
-            playerNames: [ username, 'Petya', 'Vasya', 'Kolya'],
-            playerColors: ['#333333', '#229922', '#2299ff', '#f00000'],
-            playerPicURLs: [
-                '../../resources/images/icons/logo.svg',
-                '../../resources/images/icons/logo.svg',
-                '../../resources/images/icons/logo.svg',
-                '../../resources/images/icons/logo.svg'
-            ],
+            // playerNames: [ username, 'Petya', 'Vasya', 'Kolya'],
+            // playerColors: ['#333333', '#229922', '#2299ff', '#f00000'],
+            // playerPicURLs: [
+            //     '../../resources/images/icons/logo.svg',
+            //     '../../resources/images/icons/logo.svg',
+            //     '../../resources/images/icons/logo.svg',
+            //     '../../resources/images/icons/logo.svg'
+            // ],
+            playerDataList: players,
             firstMove: username,
             gamesToWin: 4,
             dotsSize: 7,
@@ -99,26 +113,20 @@ export default class GameSettings extends Component<GameSettingsModuleProps, Gam
         else this.gameSettings = defaultSettings;
         let singleSeconds = this.calculateSingleGameTime(this.gameSettings.columns, this.gameSettings.rows)
         let matchTime = this.formatSeconds(this.calculateMatchTime(
-            this.gameSettings.gamesToWin, this.gameSettings.playerNames.length, singleSeconds
+            this.gameSettings.gamesToWin, this.gameSettings.playerDataList.length, singleSeconds
         ))
         let singleGameTime = this.formatSeconds(singleSeconds)
         this.state = {
-            columns :       this.gameSettings.columns,
-            rows:           this.gameSettings.rows,
-            playerNames:    this.gameSettings.playerNames,
-            playerPicURLs:  this.gameSettings.playerPicURLs,
-            playerColors:   this.gameSettings.playerColors,
-            playersCount:   this.gameSettings.playerNames.length,
-            firstMove:      this.gameSettings.firstMove,
-            gamesToWin:     this.gameSettings.gamesToWin,
-            dotsSize:       this.gameSettings.dotsSize,
-            dotsColor:      this.gameSettings.dotsColor,
+            ...this.gameSettings,
+            playersCount:   this.gameSettings.playerDataList.length,
             singleGameTime: singleGameTime,
             matchTime:      matchTime
         }
         this.updateTime = this.updateTime.bind(this)
         this.updateStateValue = this.updateStateValue.bind(this)
-        this.updatePlayersList = this.updatePlayersList.bind(this)
+        this.addPlayerData = this.addPlayerData.bind(this)
+        this.deletePlayerData = this.deletePlayerData.bind(this)
+        this.changePlayerData = this.changePlayerData.bind(this)
         this.updateFirstMove = this.updateFirstMove.bind(this)
     }
 
@@ -158,15 +166,32 @@ export default class GameSettings extends Component<GameSettingsModuleProps, Gam
         
         return State;
     }
-    updatePlayersList(players: string[], playerColors: string[]) {
-    
+    addPlayerData(newPlayer: playerData) {
         let newState = {...this.state}
-        newState.playersCount = players.length;   
-        newState.playerNames = players;
-        newState.playerColors = playerColors;
+        newState.playerDataList.push({...newPlayer})
         newState = this.updateTime(newState)
         console.log(newState)
         this.setState(newState)
+    }
+    deletePlayerData(login: string) {
+        let newState = {...this.state}
+        let newList = newState.playerDataList.filter(
+            (_player: playerData) => (_player.login !== login)
+        )
+        newState.playerDataList = newList
+        this.setState(newState)
+    }
+    changePlayerData(player: playerData) {
+        
+        let newState = {...this.state}
+        console.log(newState)
+        let playerToEdit = newState.playerDataList.find((_player: playerData) => (_player.login === player.login))
+        console.log(playerToEdit)
+        let index = (playerToEdit) ? newState.playerDataList.indexOf(playerToEdit) : null
+        if (index) {
+            newState.playerDataList[index] = player
+            this.setState(newState)
+        }
     }
     selectNewPlayer(e: React.FormEvent<HTMLInputElement>){
         e.currentTarget.value = ""
@@ -196,8 +221,8 @@ export default class GameSettings extends Component<GameSettingsModuleProps, Gam
     }
     render() {
         let players: Array<object> = []
-        for ( let player of this.state.playerNames) {
-            players.push( <option key={player} value={player}/> )
+        for ( let player of this.state.playerDataList) {
+            players.push( <option key={player.login} value={`${player.playerName} (${player.login})`}/> )
         }
         return (
             <div id='settings-popup'>
@@ -218,10 +243,11 @@ export default class GameSettings extends Component<GameSettingsModuleProps, Gam
 
                         <div id="settings-players-list">
                             <span>Players :</span>
-                            <PlayersList onListChange={this.updatePlayersList} 
-                                players={this.state.playerNames} 
-                                playerColors={this.state.playerColors}
-                                playerPicURLs={this.state.playerPicURLs}
+                            <PlayersList
+                                addPlayerData={this.addPlayerData}
+                                deletePlayerData={this.deletePlayerData}
+                                changePlayerData={this.changePlayerData}
+                                playerDataList={this.state.playerDataList}
                                 />
                         </div>
 
@@ -244,10 +270,6 @@ export default class GameSettings extends Component<GameSettingsModuleProps, Gam
 
                             </div>
                         </div>
-
-                    {/* </div>
-
- */}
 
                         <RangeInput boundState={"gamesToWin"} onHandleInputChange={this.updateStateValue}
                             id={"input-games-to-win"} label={"Games to win"}

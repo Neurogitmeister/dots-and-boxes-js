@@ -11,9 +11,10 @@ export class Game extends Component<GameScreenState, GameScreenState> {
         this.state = {
             columns :       this.props.columns,
             rows:           this.props.rows,
-            playerNames:    this.props.playerNames,
-            playerPicURLs:  this.props.playerPicURLs,
-            playerColors:   this.props.playerColors,
+            playerDataList: this.props.playerDataList,
+            // playerNames:    this.props.playerNames,
+            // playerPicURLs:  this.props.playerPicURLs,
+            // playerColors:   this.props.playerColors,
             firstMove:      this.props.firstMove,
             playerCount:    this.props.playerCount,
             gamesToWin:     this.props.gamesToWin,
@@ -25,7 +26,8 @@ export class Game extends Component<GameScreenState, GameScreenState> {
         this.props.columns, 
         this.props.rows,
         this.props.playerCount, 
-        this.props.playerNames.indexOf( this.props.firstMove ) + 1,
+        0,
+        //this.props.playerDataList[this.props.firstMove],
         this.props.gamesToWin
     );
     test() {
