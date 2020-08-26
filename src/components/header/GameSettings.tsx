@@ -43,15 +43,11 @@ let defaultSettings : GameSettingsList = {
     dotsSize: 3,
     dotsColor: '#f06000'
 }
-/*
-    playerNames: ['Guest','Kolya','Lena','Vika Petrovna Santa Maria Herra'],
-    playerColors: ['#00ffff', '#66ff66', '#9351F4', '#D7A3Af'],
-    playerPicURLs: [],
-*/
+
     defaultSettings.playerDataList[0] = new playerData('guest0', 'Guest', '', '#00ffff')
-    defaultSettings.playerDataList[1] = new playerData('kolya228', 'Kolya', '', '#00ffff')
-    defaultSettings.playerDataList[2] = new playerData('lenusik1994', 'Lena', '', '#00ffff')
-    defaultSettings.playerDataList[3] = new playerData('vikapetrovasantamariaherra', 'Vika Petrova Santa Maria Herra', '', '#00ffff')
+    defaultSettings.playerDataList[1] = new playerData('kolya228', 'Kolya', '', '#66ff66')
+    defaultSettings.playerDataList[2] = new playerData('lenusik1994', 'Lena', '', '#9351F4')
+    defaultSettings.playerDataList[3] = new playerData('vikapetrovasantamariaherra', 'Vika Petrova Santa Maria Herra', '', '#D7A3Af')
 for (let player of defaultSettings.playerDataList)
     player.playerPicURL = defaultAvatars[getRandomInt(0, defaultAvatars.length - 1)]
     
@@ -71,14 +67,6 @@ function fetchGameSettings (username: string ) : GameSettingsList {
             /*fetch settings from cookies here (delete code inside below)*/
             columns: 15,
             rows: 15,
-            // playerNames: [ username, 'Petya', 'Vasya', 'Kolya'],
-            // playerColors: ['#333333', '#229922', '#2299ff', '#f00000'],
-            // playerPicURLs: [
-            //     '../../resources/images/icons/logo.svg',
-            //     '../../resources/images/icons/logo.svg',
-            //     '../../resources/images/icons/logo.svg',
-            //     '../../resources/images/icons/logo.svg'
-            // ],
             playerDataList: players,
             firstMove: username,
             gamesToWin: 4,
@@ -94,43 +82,48 @@ interface GameSettingsModuleProps {
 }
 
 
-interface GameStateFields extends GameSettingsList {
+interface GameSettingsState extends GameSettingsList {
     playersCount:   number;
-    singleGameTime: string;
-    matchTime:      string;
+    singleGameTime: number;
+    matchTime:      number;
 }
 
-type GameStateField = "columns"|"rows"|"playersCount"|"gamesToWin"|"dotsSize"
+type GameTimeRelatedKey = "columns"|"rows"|"gamesToWin"
+interface GameTimeRelatedRangeValues {
+    columns?: number,
+    rows?: number,
+    gamesToWin?: number
+}
 
 let secPerMove = 5
 
-export default class GameSettings extends Component<GameSettingsModuleProps, GameStateFields>{
+export default class GameSettings extends Component<GameSettingsModuleProps, GameSettingsState>{
     // load settings values:
     constructor(props : GameSettingsModuleProps){
         super(props)
+
+        let gameSettings: GameSettingsList;
         if (this.props.tokenIsValid)
-            this.gameSettings = fetchGameSettings(this.props.username);
-        else this.gameSettings = defaultSettings;
-        let singleSeconds = this.calculateSingleGameTime(this.gameSettings.columns, this.gameSettings.rows)
-        let matchTime = this.formatSeconds(this.calculateMatchTime(
-            this.gameSettings.gamesToWin, this.gameSettings.playerDataList.length, singleSeconds
-        ))
-        let singleGameTime = this.formatSeconds(singleSeconds)
+            gameSettings  = fetchGameSettings(this.props.username);
+        else gameSettings = defaultSettings;
+
+        let singleSeconds = this.calculateSingleGameTime(gameSettings.columns, gameSettings.rows)
+
         this.state = {
-            ...this.gameSettings,
-            playersCount:   this.gameSettings.playerDataList.length,
-            singleGameTime: singleGameTime,
-            matchTime:      matchTime
+            ...gameSettings,
+            playersCount:   gameSettings.playerDataList.length,
+            singleGameTime: singleSeconds,
+            matchTime:      this.calculateMatchTime(
+                gameSettings.gamesToWin, gameSettings.playerDataList.length, singleSeconds
+            )
         }
-        this.updateTime = this.updateTime.bind(this)
-        this.updateStateValue = this.updateStateValue.bind(this)
         this.addPlayerData = this.addPlayerData.bind(this)
         this.deletePlayerData = this.deletePlayerData.bind(this)
         this.changePlayerData = this.changePlayerData.bind(this)
         this.updateFirstMove = this.updateFirstMove.bind(this)
+        this.updateStateWithRange = this.updateStateWithRange.bind(this)
     }
 
-    gameSettings: GameSettingsList;
 
     calculateSingleGameTime(columns: number, rows: number) : number {
        return (columns * (rows + 1) + rows) * secPerMove
@@ -146,51 +139,62 @@ export default class GameSettings extends Component<GameSettingsModuleProps, Gam
        let hours = Math.floor(fullSeconds / 3600)
        return (hours + "h " + minutes + "m " + seconds + "s")
     }
-    updateStateValue(stateVar: GameStateField, value: number){
-        let newState = {...this.state}
-        newState[stateVar] = value;
-        if   ( stateVar === "columns"    || stateVar === "rows" 
-            || stateVar === "gamesToWin" || stateVar === "playersCount") 
-        {
-            newState = this.updateTime(newState)
+    // beautiful solution
+    updateStateWithRange(stateVars: GameTimeRelatedRangeValues) {
+       
+        let allStateVars = {
+            rows: this.state.rows,
+            columns: this.state.columns,
+            gamesToWin: this.state.gamesToWin
         }
-        this.setState(newState)
-    }
-    updateTime( State: GameStateFields) : GameStateFields {
-        
-        let singleSeconds = this.calculateSingleGameTime(State.columns, State.rows)
-        State.matchTime = this.formatSeconds(this.calculateMatchTime(
-            State.gamesToWin, State.playersCount, singleSeconds
-        ))
-        State.singleGameTime = this.formatSeconds(singleSeconds)
-        
-        return State;
+        // find key or keys in stateVars and get values out of them
+        for (const key in stateVars) {
+            let value = stateVars[key as GameTimeRelatedKey]
+            // can be undefined as declared in interface, hence the check
+            if (value)
+                allStateVars[key as GameTimeRelatedKey] = value
+        }
+        let {rows, columns, gamesToWin} = allStateVars
+        let fullSeconds = this.calculateSingleGameTime(columns, rows)
+        this.setState({
+            rows: rows,
+            columns: columns,
+            gamesToWin: gamesToWin,
+            singleGameTime: fullSeconds,
+            matchTime: this.calculateMatchTime(gamesToWin, this.state.playersCount, fullSeconds )
+        })
     }
     addPlayerData(newPlayer: playerData) {
-        let newState = {...this.state}
-        newState.playerDataList.push({...newPlayer})
-        newState = this.updateTime(newState)
-        console.log(newState)
-        this.setState(newState)
+        
+        this.state.playerDataList.push({...newPlayer})
+        this.setState((state) => ({
+            playerDataList: state.playerDataList,
+            playersCount: state.playersCount + 1,
+            matchTime: this.calculateMatchTime(
+                state.gamesToWin, state.playersCount + 1, state.singleGameTime
+            )
+        }))
     }
     deletePlayerData(login: string) {
-        let newState = {...this.state}
-        let newList = newState.playerDataList.filter(
+       
+        let newList = this.state.playerDataList.filter(
             (_player: playerData) => (_player.login !== login)
         )
-        newState.playerDataList = newList
-        this.setState(newState)
+        this.setState((state) => ({
+            playerDataList: newList,
+            playersCount: state.playersCount - 1,
+            matchTime: this.calculateMatchTime(
+                state.gamesToWin, state.playersCount - 1, state.singleGameTime
+            )
+        }))
     }
     changePlayerData(player: playerData) {
         
-        let newState = {...this.state}
-        console.log(newState)
-        let playerToEdit = newState.playerDataList.find((_player: playerData) => (_player.login === player.login))
-        console.log(playerToEdit)
-        let index = (playerToEdit) ? newState.playerDataList.indexOf(playerToEdit) : null
+        let newDataList = this.state.playerDataList
+        let index = newDataList.findIndex((_player: playerData) => (_player.login === player.login))
         if (index) {
-            newState.playerDataList[index] = player
-            this.setState(newState)
+            newDataList[index] = player
+            this.setState({playerDataList: newDataList})
         }
     }
     selectNewPlayer(e: React.FormEvent<HTMLInputElement>){
@@ -231,14 +235,20 @@ export default class GameSettings extends Component<GameSettingsModuleProps, Gam
                         <h2 id="game-settings-header">GAME SETTINGS</h2>
                         <h2>Gameplay</h2>
                     <div id="single-game-settings" className="settings-group">
-                        <RangeInput boundState="columns" onHandleInputChange={this.updateStateValue}
-                                    id={"input-columns"} label={"Columns"}
-                                    max={20} min={3} value={this.state.columns}
-                                    />
-                        <RangeInput boundState="rows" onHandleInputChange={this.updateStateValue}
-                                    id={"input-rows"} label={"Rows"}
-                                    max={20} min={3} value={this.state.rows}
-                                    />
+                        <RangeInput 
+                            onHandleInputChange={(value) => {
+                                this.updateStateWithRange({columns: value})
+                            }}
+                            id={"input-columns"} label={"Columns"}
+                            max={20} min={3} value={this.state.columns}
+                        />
+                        <RangeInput 
+                            onHandleInputChange={(value) => {
+                                this.updateStateWithRange({rows : value})
+                            }}
+                            id={"input-rows"} label={"Rows"}
+                            max={20} min={3} value={this.state.rows}
+                        />
                         
 
                         <div id="settings-players-list">
@@ -253,14 +263,15 @@ export default class GameSettings extends Component<GameSettingsModuleProps, Gam
 
 
                         <div className="row">
-                            <p className="col-md-6">First move of player:</p>
-                            <div className="col-md-6">
+                            <p className="col-6">First move of player:</p>
+                            <div className="col-6">
                                 <input name="sglsbbxxcvcx"
                                     list="players-datalist"
                                     id="input-settings-players-move"
                                     onFocus={this.selectNewPlayer}
                                     onBlur={this.updateFirstMove}
-                                    defaultValue={this.state.firstMove}/>
+                                    defaultValue={this.state.firstMove}
+                                />
 
 
                                 <datalist id="players-datalist">
@@ -271,20 +282,23 @@ export default class GameSettings extends Component<GameSettingsModuleProps, Gam
                             </div>
                         </div>
 
-                        <RangeInput boundState={"gamesToWin"} onHandleInputChange={this.updateStateValue}
+                        <RangeInput
+                            onHandleInputChange={(value) => {
+                                this.updateStateWithRange({gamesToWin : value})
+                            }}
                             id={"input-games-to-win"} label={"Games to win"}
                             min={1} max={10} value={this.state.gamesToWin}
-                            />
+                        />
                     </div>
                     <h2>Time estimates</h2>
                     <div id="match-settings" className="settings-group">
                         <div className="estimate-calc row">
                             <p className="col-6">Single game:</p>
-                            <span className="col-6">{this.state.singleGameTime}</span>
+                            <span className="col-6">{this.formatSeconds(this.state.singleGameTime)}</span>
                         </div>
                         <div className="estimate-calc row" >
                             <p className="col-6">Match:</p>
-                            <span className="col-6">{this.state.matchTime}</span>
+                            <span className="col-6">{this.formatSeconds(this.state.matchTime)}</span>
                         </div>
                     </div>
 
@@ -292,9 +306,12 @@ export default class GameSettings extends Component<GameSettingsModuleProps, Gam
                     <div className="settings-group">
                         <div className="row">
                             <div className="col-7">
-                                <RangeInput boundState="dotsSize" onHandleInputChange={this.updateStateValue}
-                                id={"input-dots-size"} label={"Dots size"}
-                                max={9} min={3} step={2} value={this.state.dotsSize}
+                                <RangeInput
+                                    onHandleInputChange={(value) => {
+                                        this.setState({dotsSize: value})
+                                    }}
+                                    id={"input-dots-size"} label={"Dots size"}
+                                    max={9} min={3} step={2} value={this.state.dotsSize}
                                 />
                             </div>
                             <div className="col-5">
@@ -325,8 +342,7 @@ interface RangeInputProps {
     value: number
     id: string
     label: string
-    boundState: GameStateField
-    onHandleInputChange(stateVar: string, value: number): void
+    onHandleInputChange(value: number): void
 }
 
 class RangeInput extends Component<RangeInputProps, any>{
@@ -335,7 +351,7 @@ class RangeInput extends Component<RangeInputProps, any>{
         this.handleInputChange = this.handleInputChange.bind(this)
     }
     handleInputChange(e: React.FormEvent<HTMLInputElement>) {
-        this.props.onHandleInputChange(this.props.boundState,+e.currentTarget.value)
+        this.props.onHandleInputChange(+e.currentTarget.value)
     }
     render() {
         return(
