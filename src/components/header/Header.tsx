@@ -1,69 +1,63 @@
 import React, { useState } from 'react'
-import GameSettings from './GameSettings'
 import '../../styles/Header.scss'
-import defaultProfilePic from '../../resources/images/icons/logo.svg'
+import { AccountContext } from '../../App'
 
 
-// fetch these from cookies (in near future)
-let sessionToken = 0;
-let sessionTokenIsValidated = false;
-let accountUsername = 'PetyaVasin'
-let accountPictureSrc = defaultProfilePic
+interface HeaderProps {
+    settingsMenuToggle() : void
+}
 
 // main header component, uses 'Settings' and 'HeaderAccountControl' components
-export default function Header() {
-    const [settingsShow, settingsToggle] = useState(false)
+export default function Header(props: HeaderProps) {
+    //const [settingsShow, settingsToggle] = useState(false)
     
     return (
-        <>
         <header>
             <nav className='header-nav'>
                 <button 
-                    onClick={() => settingsToggle(!settingsShow)}
+                    onClick={() => props.settingsMenuToggle()}
                     id='settings-button' className='header-menu-item'
                 >Settings</button>
                 <a href='./?p=game' className='header-menu-item'>Game</a>
                 <a href='./?p=rules' className='header-menu-item'>Rules</a>
                 <a href='./?p=about' className='header-menu-item'>About</a>
             </nav>
-            <HeaderAccountControl/>
+            <AccountContext.Consumer>
+            {
+                value => 
+                <HeaderAccountControl
+                    accountUsername={value.account.player.playerName}
+                    accountPictureSrc={value.account.player.playerPicURL}
+                />
+            }
+            </AccountContext.Consumer>
         </header>
-        { settingsShow ?
-            <GameSettings username={accountUsername} tokenIsValid={sessionTokenIsValidated} />
-            : null
-        }
-    </>
     )
 }
 
 // Account control via buttons. Contains links to the 'account' page and 'create-acc' page.
-function HeaderAccountControl() {
+function HeaderAccountControl(props: any) {
     const [isLoggedIn, setLoggedIn] = useState(false)
-
-    if (isLoggedIn) {
-        accountUsername = 'PetyaVasin'
-        return (
-            <div className='header-login'>
-                <a href='./account' className='header-menu-item'>
-                    <img src={accountPictureSrc} alt=''/>
-                    {accountUsername}
-                </a>
+    //let {accountUsername, accountPictureSrc, sessionToken} = props
+    
+    return(
+        <div className='header-login'>
+            <a href='./account' className='header-menu-item'>
+                <img src={props.accountPictureSrc} alt=''/>
+                {props.accountUsername}
+            </a>
+            {
+                isLoggedIn &&
                 <button id='logout-button' onClick={() => setLoggedIn(false)} className='header-menu-item'>Logout</button>
-            </div>
-        )
-    } else {
-        accountUsername = 'Guest'
-        return (
-            <div className='header-login'>
-                <a href={'./account&?user=' + accountUsername + '&?token=' + sessionToken} className='header-menu-item'>
-                    <img src={defaultProfilePic} alt=''/>
-                    Guest
-                </a>
+            }
+            {
+                !isLoggedIn && <>
                 <button id='sign-in-button' onClick={() => setLoggedIn(true)/*() => showLoginPopup()*/}
-                        className='header-menu-item'>Sign In
+                className='header-menu-item'>Sign In
                 </button>
                 <a href='/create-acc' className='header-menu-item'>Sign Up</a>
-            </div>
-        )
-    }
+                </>
+            }
+        </div>
+    )
 }

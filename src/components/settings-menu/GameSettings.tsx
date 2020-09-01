@@ -48,8 +48,8 @@ let defaultSettings : GameSettingsList = {
     defaultSettings.playerDataList[1] = new playerData('kolya228', 'Kolya', '', '#66ff66')
     defaultSettings.playerDataList[2] = new playerData('lenusik1994', 'Lena', '', '#9351F4')
     defaultSettings.playerDataList[3] = new playerData('vikapetrovasantamariaherra', 'Vika Petrova Santa Maria Herra', '', '#D7A3Af')
-for (let player of defaultSettings.playerDataList)
-    player.playerPicURL = defaultAvatars[getRandomInt(0, defaultAvatars.length - 1)]
+    for (let player of defaultSettings.playerDataList)
+        player.playerPicURL = defaultAvatars[getRandomInt(0, defaultAvatars.length - 1)]
     
 /*validate token and load settings*/
 function fetchGameSettings (username: string ) : GameSettingsList {
@@ -265,7 +265,7 @@ export default class GameSettings extends Component<GameSettingsModuleProps, Gam
                         <div className="row">
                             <p className="col-6">First move of player:</p>
                             <div className="col-6">
-                                <input name="sglsbbxxcvcx"
+                                <input name="sglsbbxxcv"
                                     list="players-datalist"
                                     id="input-settings-players-move"
                                     onFocus={this.selectNewPlayer}

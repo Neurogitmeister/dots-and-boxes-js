@@ -3,6 +3,10 @@ import  { defaultAvatars, getRandomInt, getRandomColor } from './GameSettings'
 import '../../styles/PlayersList.scss'
 import { v4 as uuidv4 } from 'uuid'
 
+interface cya {
+	fuc: boolean,
+	kek: string
+}
 export class playerData {
 	login: string
 	playerName: string

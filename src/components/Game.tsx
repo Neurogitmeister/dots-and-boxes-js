@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { GameSettingsList } from './header/GameSettings'
+import { GameSettingsList } from './settings-menu/GameSettings'
 
 interface GameScreenState extends GameSettingsList {
     playerCount: number

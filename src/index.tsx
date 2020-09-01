@@ -4,17 +4,13 @@ import './styles/index.scss'
 
 import React from 'react'
 import ReactDOM from 'react-dom'
-import Header from './components/header/Header'
-import { DynamicPageContent } from './components/DynamicPageContent'
-import Footer from './components/Footer'
 import * as serviceWorker from './serviceWorker'
+import App from './App'
 
 ReactDOM.render(
-  <React.StrictMode>
-        <Header />
-        <DynamicPageContent page={0}/>
-        <Footer />
-  </React.StrictMode>,
+  	<React.StrictMode>
+        <App/>
+  	</React.StrictMode>,
   document.getElementById('root')
 );
 
