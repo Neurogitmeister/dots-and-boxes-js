@@ -26,7 +26,7 @@
         align-items: center;
         position: relative;
         .player-color-avatar {
-            @extend .input-color-no-border;
+            // @extend .input-color-no-border;
             z-index: 2;
             height: 30px; // toggles
             width: 5px;   // toggles
@@ -55,13 +55,14 @@
                     //!important
                     ;   
                 }
-                @extend .neumorphic-button-circle;
+                // @extend .neumorphic-button-circle;
                 
                 
             }
         }
-        .changable-name {
-            cursor: pointer
+        .profile-container {
+            cursor: pointer;
+            width: 100%;
         }
         .disable-edit {
             visibility: unset; // toggles
@@ -171,7 +172,7 @@
 
 
 .player-color {
-    @extend .input-color-no-border;
+    // @extend .input-color-no-border;
     cursor: pointer;
     border-radius: 50%;
     &::-webkit-color-swatch {
@@ -180,7 +181,7 @@
     } 
 }
 
-.changable-name {
+.changeable-name {
     position: relative;
     input {
         // height: 1rem;
@@ -190,9 +191,10 @@
         background: rgba(0, 0, 0, 0);
         color: #87bfd0;
         visibility: hidden;
-        margin-left: 5px;
         position: absolute;
         left: 30px;
+        margin-left: 5px;
+        width: calc(100% - 30px - 5px )
     }
     button, span {
         line-height: 1rem;
@@ -217,5 +219,3 @@
     }
 
 }
-
-@import './Common.scss'

@@ -19,6 +19,8 @@ interface AppState extends IAccountData {
     sessionTokenIsValidated: boolean
 }
 
+interface AppProps { }
+
 // default context data should be overwritten in .Provider
 export const AccountContext = React.createContext({
     account: {
@@ -28,9 +30,9 @@ export const AccountContext = React.createContext({
     setAccountData: (accData: IAccountData) => {}
 })
 
-export default class App extends React.Component<any, AppState> {
-	constructor() {
-		super(null);
+export default class App extends React.Component<AppProps, AppState> {
+	constructor(props: AppProps) {
+		super(props);
 		this.state = {
             settingsShow: false,
             account: {

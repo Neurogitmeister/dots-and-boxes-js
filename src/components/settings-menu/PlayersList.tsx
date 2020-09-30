@@ -91,7 +91,7 @@ export class PlayersList extends Component<PlayerListProps, any> {
 		return (
 			<ul id="players-list" className={"" + this.state.listEditMode}>
 				{players}	
-				<div id="add-player-input" className="neumorphic-button-circle changable-name" onClick={this.addLocalPlayer}>
+				<div id="add-player-input" className="neumorphic-button-circle changeable-name" onClick={this.addLocalPlayer}>
 					<div className="bump-shadow-override">
 						<span>+</span>
 					</div>
@@ -160,8 +160,8 @@ class PlayerOfList extends Component<PlayerProps, PlayerState> {
 		this.setState({playerColor: e.currentTarget.value})
 	}
 	changePlayerName(e: React.KeyboardEvent<HTMLInputElement>) {
-		var x = e.which || e.keyCode;
-		if (x === 13) {
+		var x = e.key;
+		if (x === "Enter") {
 			e.preventDefault();
 			this.props.changePlayerData({...this.props.player, playerName: e.currentTarget.value })
 			this.setState({isEditingName: false})
@@ -208,42 +208,42 @@ class PlayerOfList extends Component<PlayerProps, PlayerState> {
 			<div id={login + "-drag-target"} className="overlay drag-target " onClick={function () {}}></div>
 			
 			<div className="player-edit-group">
-				<div className="button-color">
+				<div className="button-color neumorphic-button-circle">
 					<div  className="bump-shadow-override">
-						<input className="player-color" type="color"
+						<input className="player-color input-color-no-border" type="color"
 						defaultValue={playerColor}
 						onChange={this.changeColorSelf}
 						onBlur={this.changePlayerColor} 
 						/>
 					</div>
 				</div>
-				<div className="button-apply" onClick={this.enableChoose}><div className="bump-shadow-override">
+				<div className="button-apply neumorphic-button-circle" onClick={this.enableChoose}><div className="bump-shadow-override">
 					<span>OK</span>
 				</div></div>
-				<div className="button-cancel" onClick={this.enableChoose}><div className="bump-shadow-override">
+				<div className="button-cancel neumorphic-button-circle" onClick={this.enableChoose}><div className="bump-shadow-override">
 					<span>X</span>
 				</div></div>
 				{ !this.props.isProfile &&
-					<div className="button-delete" onClick={this.deletePlayer}><div className="bump-shadow-override">
+					<div className="button-delete neumorphic-button-circle" onClick={this.deletePlayer}><div className="bump-shadow-override">
 						<span>T</span>
 					</div></div>
 				}
 
 			</div>
-			<div className="player-color-avatar" style={{backgroundColor: this.state.playerColor }}></div>
+			<div className="player-color-avatar input-color-no-border" style={{backgroundColor: this.state.playerColor }}></div>
 		
-				<div className={`profile-container changable-name${this.state.isEditingName? " active" : ""}`}>
-					<img src={playerPicURL} alt="" />
-					
-					<span onClick={ this.props.isProfile? this.showHint : this.showInput} className="player-name">{playerName}</span> 
+			<div className={"profile-container changeable-name" + (this.state.isEditingName? " active":"") }>
+				<img src={playerPicURL} alt="" />
+				
+				<span onClick={ this.props.isProfile? this.showHint : this.showInput} className="player-name">{playerName}</span> 
 
-					{ !this.props.isProfile &&
-					<input 
-						className="player-name-input" 
-						onKeyPress={this.changePlayerName} 
-						onBlur={this.hideInput} defaultValue={playerName}
-					/>}                
-				</div>
+				{ !this.props.isProfile &&
+				<input 
+					className="player-name-input" 
+					onKeyPress={this.changePlayerName} 
+					onBlur={this.hideInput} defaultValue={playerName}
+				/>}                
+			</div>
 
 			
 		</li>);

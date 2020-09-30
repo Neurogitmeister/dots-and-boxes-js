@@ -234,7 +234,7 @@ export default class GameSettings extends Component<GameSettingsModuleProps, Gam
 
                         <h2 id="game-settings-header">GAME SETTINGS</h2>
                         <h2>Gameplay</h2>
-                    <div id="single-game-settings" className="settings-group">
+                    <div id="single-game-settings" className="settings-group neumorphic-cave">
                         <RangeInput 
                             onHandleInputChange={(value) => {
                                 this.updateStateWithRange({columns: value})
@@ -291,7 +291,7 @@ export default class GameSettings extends Component<GameSettingsModuleProps, Gam
                         />
                     </div>
                     <h2>Time estimates</h2>
-                    <div id="match-settings" className="settings-group">
+                    <div id="match-settings" className="settings-group neumorphic-cave">
                         <div className="estimate-calc row">
                             <p className="col-6">Single game:</p>
                             <span className="col-6">{this.formatSeconds(this.state.singleGameTime)}</span>
@@ -303,7 +303,7 @@ export default class GameSettings extends Component<GameSettingsModuleProps, Gam
                     </div>
 
                     <h2>Graphics</h2>
-                    <div className="settings-group">
+                    <div className="settings-group neumorphic-cave">
                         <div className="row">
                             <div className="col-7">
                                 <RangeInput
@@ -320,7 +320,7 @@ export default class GameSettings extends Component<GameSettingsModuleProps, Gam
                                     <div>    
                                         <input type="color"
                                         id='input-dots-color'
-                                        className="player-color"
+                                        className="player-color input-color-no-border"
                                         defaultValue={this.state.dotsColor}
                                         style={{width: '80%', height: '80%'}}
                                         />

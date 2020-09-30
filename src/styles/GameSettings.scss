@@ -13,7 +13,7 @@
         padding: 0 25px 30px;
         margin: 0;
         .settings-group {
-            @extend .neumorphic-cave;
+            // @extend .neumorphic-cave;
             padding-left: 25px;
         }
         h2 {
@@ -67,5 +67,3 @@
 .settings-group {
     padding: 10px;
 }
-
-@import './Common.scss'
